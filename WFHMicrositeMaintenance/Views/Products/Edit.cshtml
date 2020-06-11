@@ -1,0 +1,90 @@
+﻿@model WFHMicrositeMaintenance.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form enctype="multipart/form-data" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="LogoImage" />
+            <input type="hidden" asp-for="LogoImage2" />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="DealerCode" class="control-label"></label>
+                    <input asp-for="DealerCode" class="form-control" />
+                    <span asp-validation-for="DealerCode" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Ponumber" class="control-label"></label>
+                    <input asp-for="Ponumber" class="form-control" />
+                    <span asp-validation-for="Ponumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Chair" class="control-label"></label>
+                    <input asp-for="Chair" class="form-control" />
+                    <span asp-validation-for="Chair" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LogoFile" class="control-label"></label>
+                    <input asp-for="LogoFile" class="form-control" readonly="readonly" />
+                    <span asp-validation-for="LogoFile" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FormFile" class="control-label"></label>
+                    <input asp-for="FormFile" class="form-control" />
+                    <span asp-validation-for="FormFile" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LogoFile2" class="control-label"></label>
+                    <input asp-for="LogoFile2" class="form-control" readonly="readonly" />
+                    <span asp-validation-for="LogoFile2" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FormFile2" class="control-label"></label>
+                    <input asp-for="FormFile2" class="form-control" />
+                    <span asp-validation-for="FormFile2" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="InstallGuide" class="control-label"></label>
+                    <input asp-for="InstallGuide" class="form-control" />
+                    <span asp-validation-for="InstallGuide" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="UserGuide" class="control-label"></label>
+                    <input asp-for="UserGuide" class="form-control" />
+                    <span asp-validation-for="UserGuide" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="VideoUrl" class="control-label"></label>
+                    <input asp-for="VideoUrl" class="form-control" />
+                    <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="VerifyOnly" class="control-label"></label>
+                    <input type="checkbox" asp-for="VerifyOnly" />
+                    <span asp-validation-for="VerifyOnly" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

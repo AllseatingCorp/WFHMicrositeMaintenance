@@ -1,0 +1,75 @@
+﻿@model WFHMicrositeMaintenance.Models.Product
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Product</h4>
+<hr />
+<form enctype="multipart/form-data" asp-action="Create">
+    <div class="row">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="DealerCode" class="control-label col-md-4"></label>
+                <input asp-for="DealerCode" class="form-control col-md-8" />
+                <span asp-validation-for="DealerCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ponumber" class="control-label"></label>
+                <input asp-for="Ponumber" class="form-control" />
+                <span asp-validation-for="Ponumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Chair" class="control-label"></label>
+                <input asp-for="Chair" class="form-control" />
+                <span asp-validation-for="Chair" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FormFile" class="control-label"></label>
+                <input asp-for="FormFile" class="form-control" />
+                <span asp-validation-for="FormFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FormFile2" class="control-label"></label>
+                <input asp-for="FormFile2" class="form-control" />
+                <span asp-validation-for="FormFile2" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="InstallGuide" class="control-label"></label>
+                <input asp-for="InstallGuide" class="form-control" />
+                <span asp-validation-for="InstallGuide" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserGuide" class="control-label"></label>
+                <input asp-for="UserGuide" class="form-control" />
+                <span asp-validation-for="UserGuide" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VideoUrl" class="control-label"></label>
+                <input asp-for="VideoUrl" class="form-control" />
+                <span asp-validation-for="VideoUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VerifyOnly" class="control-label"></label>
+                <input type="checkbox" asp-for="VerifyOnly" />
+                <span asp-validation-for="VerifyOnly" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

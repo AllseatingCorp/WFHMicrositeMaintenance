@@ -1,0 +1,62 @@
+﻿@model IEnumerable<WFHMicrositeMaintenance.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table" id="index">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DealerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ponumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Chair)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DealerCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ponumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Chair)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                    <a asp-action="Index" asp-controller="ProductOptions" asp-route-id="@item.ProductId">Options</a> |
+                    <a asp-action="Index" asp-controller="ProductImages" asp-route-id="@item.ProductId">Images</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
+                    <a asp-action="Emails" asp-route-id="@item.ProductId" hidden="hidden"> | Send Emails</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#index').DataTable({
+                "columnDefs": [{ "targets": 3, "orderable": false }]
+            });
+        });
+    </script>
+}

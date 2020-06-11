@@ -1,0 +1,159 @@
+﻿@model WFHMicrositeMaintenance.Models.User
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>User</h4>
+<hr />
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="Commercial" />
+    <input type="hidden" asp-for="Emailed" />
+    <input type="hidden" asp-for="Completed" />
+    <input type="hidden" asp-for="InProduction" />
+    <input type="hidden" asp-for="Shipped" />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="ProductId" class="control-label col-md-4"></label>
+                <select asp-for="ProductId" asp-items="@(new SelectList(Model.Products, "ProductId", "Chair"))" class="form-control col-md-8"><option>Select product</option></select>
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailAddress" class="control-label col-md-4"></label>
+                <input asp-for="EmailAddress" class="form-control col-md-8" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Language" class="control-label col-md-4"></label>
+                <select asp-for="Language" asp-items="Model.Languages" class="form-control col-md-8"></select>
+                <span asp-validation-for="Language" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pin" class="control-label col-md-4"></label>
+                <input asp-for="Pin" class="form-control col-md-8" readonly="readonly" , style="display:inline-block;" />
+                <input type="button" id="btnPin" value="New PIN" class="btn btn-secondary" onclick="GetNewPin();" />
+                <span asp-validation-for="Pin" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrackingNumber" class="control-label col-md-4"></label>
+                <input asp-for="TrackingNumber" class="form-control col-md-8" readonly="readonly" />
+                <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AttnName" class="control-label col-md-4"></label>
+                <input asp-for="AttnName" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="AttnName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label col-md-4"></label>
+                <input asp-for="PhoneNumber" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Address1" class="control-label col-md-4"></label>
+                <input asp-for="Address1" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="Address1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address2" class="control-label col-md-4"></label>
+                <input asp-for="Address2" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="Address2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label col-md-4"></label>
+                <input asp-for="City" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProvinceState" class="control-label col-md-4"></label>
+                <input asp-for="ProvinceState" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="ProvinceState" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalZip" class="control-label col-md-4"></label>
+                <input asp-for="PostalZip" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="PostalZip" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label col-md-4"></label>
+                <input asp-for="Country" class="form-control col-md-8 text-uppercase" />
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SpecialInstructions" class="control-label col-md-4"></label>
+                <input asp-for="SpecialInstructions" class="form-control col-md-8" />
+                <span asp-validation-for="SpecialInstructions" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="button" id="btnNotes" value="Notes" class="btn btn-secondary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" tabindex="-1" id="notesModal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Notes</h4>
+                <button type="button" class="close" data-dismiss="modal">×</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group" style="overflow:scroll; height:200px;">
+                        <label id="labelNotes"></label>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" name="Notes" id="inputNotes" cols="50" rows="5" style="resize:none"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnOk" class="btn btn-secondary button button4">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+        function GetNewPin() {
+            $.get("@Url.Action("GetNewPin", "Users")", function (data) {
+                $('#Pin').val(data);
+            });
+        }
+
+        $("#btnNotes").click(function () {
+            var id = $('#UserId').val();
+            $.get("@Url.Action("GetNotes", "Users")", { id: id }, function (data) {
+                $('#labelNotes').html(data);
+            });
+            $("#notesModal").modal('show');
+        });
+
+        $("#btnOk").click(function () {
+            $("#notesModal").modal('hide');
+            var id = $('#UserId').val();
+            var notes = $('#inputNotes').val();
+            $('#inputNotes').val("");
+            $.get("@Url.Action("SaveNotes", "Users")", { id : id, notes: notes }, function (data) {
+            });
+
+        });
+</script>
+}

@@ -1,0 +1,86 @@
+﻿@model WFHMicrositeMaintenance.Models.Production
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.OrderNumber)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.OrderNumber)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.Address1)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.Address1)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.Address2)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.Address2)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.City)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.City)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.ProvinceState)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.ProvinceState)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.PostalZip)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.PostalZip)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.Country)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.Country)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.SpecialInstructions)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.SpecialInstructions)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.Commercial)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.Commercial)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.TrackingNumber)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.TrackingNumber)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" style="height:75%; width:75%" />
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

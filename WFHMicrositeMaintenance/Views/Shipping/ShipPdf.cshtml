@@ -1,0 +1,44 @@
+﻿@model WFHMicrositeMaintenance.Models.Production
+@{
+    ViewBag.Title = "Shipping Document";
+    Layout = "";
+}
+
+<div style="font-size: 11pt; font-family: NewsGoth BT, Helvetica, Calibri,Arial, sans-serif">
+    <h5>Order Number: @Model.User.OrderNumber - For: @Model.User.AttnName</h5>
+    <table class="table" width="100%">
+        <tr>
+            <td width="100px">Phone Number</td>
+            <td>@Model.User.PhoneNumber</td>
+            <td rowspan="9"><img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" /></td>
+        </tr>
+        <tr>
+            <td>Address</td>
+            <td>@Model.User.Address1</td>
+        </tr>
+        <tr>
+            <td>House/Apt #</td>
+            <td>@Model.User.Address2</td>
+        </tr>
+        <tr>
+            <td>City</td>
+            <td>@Model.User.City</td>
+        </tr>
+        <tr>
+            <td>Province/State</td>
+            <td>@Model.User.ProvinceState</td>
+        </tr>
+        <tr>
+            <td>Postal/Zip</td>
+            <td>@Model.User.PostalZip</td>
+        </tr>
+        <tr>
+            <td>Country</td>
+            <td>@Model.User.Country</td>
+        </tr>
+        <tr>
+            <td>Instructions</td>
+            <td>@Model.User.SpecialInstructions</td>
+        </tr>
+    </table>
+</div>

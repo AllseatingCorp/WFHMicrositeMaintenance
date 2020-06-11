@@ -1,0 +1,51 @@
+﻿@model WFHMicrositeMaintenance.Models.ProductImage
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ProductImage</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ProductImageId" />
+            <input type="hidden" asp-for="ProductId" />
+            <input type="hidden" asp-for="Image" />
+            <div class="form-group">
+                <label asp-for="ProductOption1Id" class="control-label"></label>
+                <select asp-for="ProductOption1Id" asp-items="Model.Options1" class="form-control"></select>
+                <span asp-validation-for="ProductOption1Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProductOption2Id" class="control-label"></label>
+                <select asp-for="ProductOption2Id" asp-items="Model.Options2" class="form-control"></select>
+                <span asp-validation-for="ProductOption2Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileName" class="control-label"></label>
+                <input asp-for="FileName" class="form-control" readonly="readonly" />
+                <span asp-validation-for="FileName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FormFile" class="control-label"></label>
+                <input asp-for="FormFile" class="form-control" />
+                <span asp-validation-for="FormFile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index" asp-route-id="@Model.ProductId">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

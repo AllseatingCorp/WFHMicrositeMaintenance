@@ -1,0 +1,67 @@
+﻿@model IEnumerable<WFHMicrositeMaintenance.Models.Production>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table" id="index">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.User.OrderNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.AttnName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Chair)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.DealerCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.Ponumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.AttnName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Chair)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.DealerCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Ponumber)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.User.UserId">Start Production</a> |
+                    <a asp-action="Details" asp-route-id="@item.User.UserId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#index').DataTable({
+                "columnDefs": [{ "targets": 5, "orderable": false }]
+            });
+        });
+    </script>
+}

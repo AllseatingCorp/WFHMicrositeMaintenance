@@ -1,0 +1,126 @@
+﻿@model WFHMicrositeMaintenance.Models.User
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.ProductId)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Product)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.EmailAddress)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.EmailAddress)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Pin)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Pin)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Address1)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Address1)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Address2)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Address2)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.City)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.City)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.ProvinceState)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.ProvinceState)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.PostalZip)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.PostalZip)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Country)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Country)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.SpecialInstructions)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.SpecialInstructions)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Commercial)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Commercial)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.TrackingNumber)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.TrackingNumber)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Emailed)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Emailed)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Completed)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Completed)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.InProduction)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.InProduction)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Shipped)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Shipped)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Notes)<br />
+                <div class="col-md-23" style="width:500px; height:100%; overflow-y:scroll;">
+                    @Html.Raw(@Model.Notes)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.UserId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

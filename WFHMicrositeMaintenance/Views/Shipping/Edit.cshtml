@@ -1,0 +1,123 @@
+﻿@model WFHMicrositeMaintenance.Models.Production
+
+@{
+    ViewData["Title"] = "Start Production";
+}
+
+<h1>Production</h1>
+
+<h4>Order</h4>
+<hr />
+<form asp-action="Edit" id="formEdit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="User.UserId" />
+    <input type="hidden" asp-for="User.ProductId" />
+    <input type="hidden" asp-for="User.EmailAddress" />
+    <input type="hidden" asp-for="User.Language" />
+    <input type="hidden" asp-for="User.Pin" />
+    <input type="hidden" asp-for="User.AttnName" />
+    <input type="hidden" asp-for="User.PhoneNumber" />
+    <input type="hidden" asp-for="User.Address1" />
+    <input type="hidden" asp-for="User.Address2" />
+    <input type="hidden" asp-for="User.City" />
+    <input type="hidden" asp-for="User.ProvinceState" />
+    <input type="hidden" asp-for="User.PostalZip" />
+    <input type="hidden" asp-for="User.Country" />
+    <input type="hidden" asp-for="User.SpecialInstructions" />
+    <input type="hidden" asp-for="User.Commercial" />
+    <input type="hidden" asp-for="User.Emailed" />
+    <input type="hidden" asp-for="User.Completed" />
+    <input type="hidden" asp-for="User.InProduction" />
+    <input type="hidden" asp-for="User.Shipped" />
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="row">
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.OrderNumber)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.OrderNumber)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.AttnName)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.AttnName)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.PhoneNumber)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.PhoneNumber)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.Address1)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.Address1)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.Address2)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.Address2)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.City)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.City)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.ProvinceState)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.ProvinceState)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.PostalZip)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.PostalZip)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.Country)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.Country)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.SpecialInstructions)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.SpecialInstructions)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" style="height:75%; width:75%" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <input type="button" id="btnSubmit" value="Start" class="btn btn-primary" onclick="GetOrderPdf();" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function GetOrderPdf() {
+            var id = $('#User_UserId').val();
+            $.get("@Url.Action("GetOrderPdf", "Production")", { id: id }, function (data) {
+                window.open("data:application/pdf;base64," + data, "_blank");
+                $('#formEdit').submit();
+            });
+        }
+    </script>
+}
