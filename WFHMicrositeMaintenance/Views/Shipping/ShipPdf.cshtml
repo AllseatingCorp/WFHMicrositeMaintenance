@@ -10,7 +10,7 @@
         <tr>
             <td width="100px">Phone Number</td>
             <td>@Model.User.PhoneNumber</td>
-            <td rowspan="9"><img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" /></td>
+            <td rowspan="10"><img src="data:image;base64,@System.Convert.ToBase64String(@Model.Image)" /></td>
         </tr>
         <tr>
             <td>Address</td>
@@ -39,6 +39,21 @@
         <tr>
             <td>Instructions</td>
             <td>@Model.User.SpecialInstructions</td>
+        </tr>
+        <tr>
+            <td>Tracking Number</td>
+            <td>@Model.User.TrackingNumber</td>
+        </tr>
+        <tr>
+            @foreach (var item in Model.UserSelections)
+            {
+                <td>
+                    <label>
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                        <label style="font-size:small">@item.Name</label>
+                    </label>
+                </td>
+            }
         </tr>
     </table>
 </div>

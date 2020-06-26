@@ -1,0 +1,70 @@
+﻿@model WFHMicrositeMaintenance.Models.Selections
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>User Selections for @Model.EmailAddress</h4>
+<hr />
+<form asp-action="Selections">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="ProductId" />
+    <input type="hidden" asp-for="EmailAddress" />
+    <input type="hidden" asp-for="Fabric" />
+    <input type="hidden" asp-for="Mesh" />
+    <input type="hidden" asp-for="Frame" />
+    <div class="row">
+        <div class="col-md-12">
+            <table style="border: 1px solid white; border-spacing: 20px">
+                @foreach (var selection in Model.UserSelections)
+                {
+                    <tr>
+                        <td colspan="3">
+                            <label>@selection.Type</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        @foreach (var item in selection.Options)
+                        {
+                            <td>
+                                <label>
+                                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                                    <input type="radio" name="@item.Type" value="@item.ProductOptionId" id="Fabric@(item.ProductOptionId)" checked="@item.Default" />&nbsp;<label style="font-size:small">@item.Name</label>
+                                </label>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+
+        $('input[name=Fabric]').change(function () {
+            var fabric = $('input[name=Fabric]:checked').val();
+            $('#Fabric').val(fabric);
+        });
+        $('input[name=Mesh]').change(function () {
+            var mesh = $('input[name=Mesh]:checked').val();
+            $('#Mesh').val(mesh);
+        });
+        $('input[name=Frame]').change(function () {
+            var frame = $('input[name=Frame]:checked').val();
+            $('#Frame').val(frame);
+        });
+    </script>
+}

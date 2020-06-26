@@ -68,6 +68,19 @@ namespace WFHMicrositeMaintenance.Models
         public SelectList Languages { get; set; }
     }
 
+    [ModelMetadataType(typeof(UserSelectionMetadata))]
+    public partial class UserSelection
+    {
+        public class UserSelectionMetadata
+        {
+        }
+        [NotMapped]
+        public byte[] Image { get; set; }
+        [NotMapped]
+        public string Name { get; set; }
+        [NotMapped]
+        public List<ProductOption> Options { get; set; }
+    }
     [ModelMetadataType(typeof(ProductMetadata))]
     public partial class Product
     {
@@ -82,6 +95,9 @@ namespace WFHMicrositeMaintenance.Models
 
             [Display(Name = "Chair Name")]
             public string Chair { get; set; }
+
+            [Display(Name = "Language")]
+            public string Language { get; set; }
 
             [Display(Name = "Company Logo File")]
             public string LogoFile { get; set; }
@@ -98,6 +114,9 @@ namespace WFHMicrositeMaintenance.Models
             [Display(Name = "Video Url")]
             public string VideoUrl { get; set; }
 
+            [Display(Name = "Sit Fit Guide")]
+            public string SitFitGuide { get; set; }
+
             [Display(Name = "Verify Only")]
             public bool VerifyOnly { get; set; }
         }
@@ -109,6 +128,8 @@ namespace WFHMicrositeMaintenance.Models
         [Display(Name = "Upload Dealer Logo File")]
         [NotMapped]
         public IFormFile FormFile2 { get; set; }
+        [NotMapped]
+        public SelectList Languages { get; set; }
     }
 
     [ModelMetadataType(typeof(ProductOptionMetadata))]
@@ -150,6 +171,10 @@ namespace WFHMicrositeMaintenance.Models
             [Required]
             public int ProductOption2Id { get; set; }
 
+            [Display(Name = "Frame")]
+            [Required]
+            public int ProductOption3Id { get; set; }
+
             [Display(Name = "Image File")]
             public string FileName { get; set; }
         }
@@ -164,8 +189,12 @@ namespace WFHMicrositeMaintenance.Models
         [NotMapped]
         public string Option2 { get; set; }
         [NotMapped]
+        public string Option3 { get; set; }
+        [NotMapped]
         public SelectList Options1 { get; set; }
         [NotMapped]
         public SelectList Options2 { get; set; }
+        [NotMapped]
+        public SelectList Options3 { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,16 +35,22 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
                             </li>
                         }
-                        @if (User.IsInGroup("APPS_FULL") || User.IsInGroup("WFH_PROD"))
+                        @if (User.IsInGroup("APPS_FULL") || User.IsInGroup("WFH_ADMIN") || User.IsInGroup("WFH_PROD"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Production" asp-action="Index">Production</a>
                             </li>
                         }
-                        @if (User.IsInGroup("APPS_FULL") || User.IsInGroup("WFH_SHIP"))
+                        @if (User.IsInGroup("APPS_FULL") || User.IsInGroup("WFH_ADMIN") || User.IsInGroup("WFH_SHIP"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Shipping" asp-action="Index">Shipping</a>
+                            </li>
+                        }
+                        @if (User.IsInGroup("APPS_FULL") || User.IsInGroup("WFH_ADMIN") || User.IsInGroup("WFH_WRNTY"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Warranty" asp-action="Index">Warranty</a>
                             </li>
                         }
                     </ul>
@@ -57,7 +66,15 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2020 - WFHMicrositeMaintenance - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            @if (Configuration["ConnectionStrings:MicrositeDatabase"].ToLower().Contains("allrs"))
+            {
+                @Html.Raw("<strong>LIVE</strong>&nbsp;")
+            }
+            else
+            {
+                @Html.Raw("<strong>TEST</strong>&nbsp;")
+            }
+            &copy; 2020 - Allseating Corporation. All Rights Reserved.
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -31,6 +31,11 @@
                 </label>
             </div>
             <div class="form-group">
+                <label asp-for="StockCode" class="control-label"></label>
+                <input asp-for="StockCode" class="form-control" />
+                <span asp-validation-for="StockCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="FileName" class="control-label"></label>
                 <input asp-for="FileName" class="form-control" readonly="readonly" />
                 <span asp-validation-for="FileName" class="text-danger"></span>

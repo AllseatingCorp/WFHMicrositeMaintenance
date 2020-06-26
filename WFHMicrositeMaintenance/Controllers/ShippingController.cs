@@ -32,7 +32,7 @@ namespace WFHMicrositeMaintenance.Controllers
         public async Task<IActionResult> Index()
         {
             List<Production> production = new List<Production>();
-            List<User> users = await _context.User.Where(x => x.Completed != null && x.InProduction != null).ToListAsync();
+            List<User> users = await _context.User.Where(x => x.Completed != null && x.InProduction != null && (x.Shipped == null || x.TrackingNumber == null)).ToListAsync();
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
@@ -63,20 +63,40 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            int fabric = 0;
+            int mesh = 0;
+            int frame = 0;
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
+            foreach (var item in userSelections)
+            {
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+            }
             Production production = new Production
             {
                 User = user,
-                Product = await _context.Product.FindAsync(user.ProductId)
+                Product = await _context.Product.FindAsync(user.ProductId),
+                UserSelections = userSelections,
+                Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
-            int fabric = 0;
-            int mesh = 0;
-            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
-            foreach (var item in userSelections)
-            {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
-            }
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
 
             return View(production);
         }
@@ -99,20 +119,40 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            int fabric = 0;
+            int mesh = 0;
+            int frame = 0;
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
+            foreach (var item in userSelections)
+            {
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+            }
             Production production = new Production
             {
                 User = user,
-                Product = await _context.Product.FindAsync(user.ProductId)
+                Product = await _context.Product.FindAsync(user.ProductId),
+                UserSelections = userSelections,
+                Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
-            int fabric = 0;
-            int mesh = 0;
-            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
-            foreach (var item in userSelections)
-            {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
-            }
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
 
             return View(production);
         }
@@ -133,9 +173,16 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 try
                 {
-                    production.User.Shipped = DateTime.Now;
+                    if (production.User.Shipped == null)
+                    {
+                        production.User.Shipped = DateTime.Now;
+                    }
                     _context.Update(production.User);
                     await _context.SaveChangesAsync();
+                    if (!string.IsNullOrEmpty(production.User.TrackingNumber))
+                    {
+                        EmailUser(production.User);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -153,21 +200,35 @@ namespace WFHMicrositeMaintenance.Controllers
             return View(production);
         }
 
-        public async Task<byte[]> GetOrderPdf(int id)
+        public async Task<byte[]> GetOrderPdf(int id, string trackingnumber)
         {
             Production production = new Production();
             int fabric = 0;
             int mesh = 0;
             production.User = await _context.User.FindAsync(id);
             List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
             foreach (var item in userSelections)
             {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
             }
+            production.UserSelections = userSelections;
             production.User.PhoneNumber = String.Format("{0:(###) ###-####}", production.User.PhoneNumber);
             production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
             production.User.OrderNumber = production.User.UserId.ToString().PadLeft(8, '0');
+            production.User.TrackingNumber = trackingnumber;
 
             var report = new ViewAsPdf("ShipPdf", production)
             {
@@ -178,6 +239,36 @@ namespace WFHMicrositeMaintenance.Controllers
             };
             var byteArray = report.BuildFile(this.ControllerContext);
             return byteArray.Result;
+        }
+
+        private void EmailUser(User user)
+        {
+            string url = _configuration.GetValue<string>("AppSettings:UpsUrl") + user.TrackingNumber;
+            string body = "Your customized Allseating order can now be tracked.<br/><br/><a href='" + url + "'>Click here</a> to track your chair.";
+            string file = _env.WebRootPath + "\\emails\\email3_" + user.Language + ".txt";
+            StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
+            if (sr != null)
+            {
+                string[] parameters = new string[] { url, user.TrackingNumber };
+                body = string.Format(sr.ReadToEnd(), parameters);
+                sr.Close();
+                sr.Dispose();
+            }
+            string subject = "Your custom chair can now be tracked!";
+            if (user.Language == "French") subject = "Il vous est maintenant possible de suivre votre chaise personnalisée!";
+            var emessage = new MailMessage("postmaster@allseating.com", user.EmailAddress, subject, body)
+            {
+                IsBodyHtml = true,
+                BodyEncoding = System.Text.Encoding.UTF8
+            };
+            emessage.Bcc.Add("admin@allseating.com");
+            emessage.Bcc.Add("wfh@allseating.com");
+            using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
+            {
+                UseDefaultCredentials = true
+            };
+            SmtpMail.Send(emessage);
+            emessage.Dispose();
         }
 
         private bool UserExists(int id)

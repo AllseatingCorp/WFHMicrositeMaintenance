@@ -53,7 +53,12 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
-            return View();
+            Product product = new Product
+            {
+                Language = "English"
+            };
+            product.Languages = new SelectList(new List<string>() { "English", "French" });
+            return View(product);
         }
 
         // POST: Products/Create
@@ -61,7 +66,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,VerifyOnly")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,Language,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -84,6 +89,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            product.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(product);
         }
 
@@ -100,6 +106,7 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 return NotFound();
             }
+            product.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(product);
         }
 
@@ -108,7 +115,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,VerifyOnly")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,Language,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -150,6 +157,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            product.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(product);
         }
 
@@ -190,14 +198,13 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.ProductId == id);
+            var product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            List<User> users = await _context.User.Where(x => x.ProductId == id && x.Completed == null).ToListAsync();
+            List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed == null).Take(_configuration.GetValue<int>("AppSettings:EmailCount")).ToListAsync();
             foreach (var user in users)
             {
                 if (!string.IsNullOrEmpty(user.EmailAddress))
@@ -233,6 +240,7 @@ namespace WFHMicrositeMaintenance.Controllers
                         IsBodyHtml = true
                     };
                     emessage.Bcc.Add("admin@allseating.com");
+                    emessage.Bcc.Add("wfh@allseating.com");
                     using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
                     {
                         UseDefaultCredentials = true
@@ -242,6 +250,25 @@ namespace WFHMicrositeMaintenance.Controllers
                     user.Emailed = DateTime.Now;
                     _context.Update(user);
                 }
+            }
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Products/Complete/5
+        public async Task<IActionResult> Complete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed != null && x.Completed == null).ToListAsync();
+            foreach (var user in users)
+            {
+                user.Completed = DateTime.Now;
+                _context.Update(user);
             }
             await _context.SaveChangesAsync();
 

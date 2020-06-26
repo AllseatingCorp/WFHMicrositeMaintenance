@@ -53,6 +53,10 @@ namespace WFHMicrositeMaintenance.Models
 
                 entity.Property(e => e.InstallGuide).HasMaxLength(50);
 
+                entity.Property(e => e.Language)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
                 entity.Property(e => e.LogoFile).HasMaxLength(100);
 
                 entity.Property(e => e.LogoFile2).HasMaxLength(100);
@@ -62,6 +66,8 @@ namespace WFHMicrositeMaintenance.Models
                 entity.Property(e => e.Ponumber)
                     .HasColumnName("PONumber")
                     .HasMaxLength(30);
+
+                entity.Property(e => e.SitFitGuide).HasMaxLength(50);
 
                 entity.Property(e => e.UserGuide).HasMaxLength(50);
 
@@ -84,6 +90,8 @@ namespace WFHMicrositeMaintenance.Models
                     .HasMaxLength(50);
 
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
+
+                entity.Property(e => e.StockCode).HasMaxLength(50);
 
                 entity.Property(e => e.Type)
                     .IsRequired()

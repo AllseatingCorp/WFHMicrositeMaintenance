@@ -63,7 +63,7 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 ProductId = id,
                 Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync(),
-                Types = new SelectList(new List<string>() { "Fabric", "Mesh" })
+                Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame" })
             };
             return View(productOption);
         }
@@ -73,7 +73,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductOptionId,ProductId,Type,Name,FormFile,Default")] ProductOption productOption)
+        public async Task<IActionResult> Create([Bind("ProductOptionId,ProductId,Type,Name,FormFile,Default,StockCode")] ProductOption productOption)
         {
             if (ModelState.IsValid)
             {
@@ -106,7 +106,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
             productOption.Product = await _context.Product.Where(x => x.ProductId == productOption.ProductId).Select(y => y.Chair).FirstOrDefaultAsync();
-            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh" });
+            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame" });
 
             return View(productOption);
         }
@@ -116,7 +116,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductOptionId,ProductId,Type,Name,FileName,Image,FormFile,Default")] ProductOption productOption)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductOptionId,ProductId,Type,Name,FileName,Image,FormFile,Default,StockCode")] ProductOption productOption)
         {
             if (id != productOption.ProductOptionId)
             {

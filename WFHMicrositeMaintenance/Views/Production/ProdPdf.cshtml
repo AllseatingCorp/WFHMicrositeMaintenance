@@ -40,5 +40,16 @@
             <td>Instructions</td>
             <td>@Model.User.SpecialInstructions</td>
         </tr>
+        <tr>
+            @foreach (var item in Model.UserSelections)
+            {
+            <td>
+                <label>
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                    <label style="font-size:small">@item.Name</label>
+                </label>
+            </td>
+            }
+        </tr>
     </table>
 </div>

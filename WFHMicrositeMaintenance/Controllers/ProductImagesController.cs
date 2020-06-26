@@ -36,6 +36,7 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 item.Option1 = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOption1Id).Select(y => y.Name).FirstOrDefaultAsync();
                 item.Option2 = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOption2Id).Select(y => y.Name).FirstOrDefaultAsync();
+                item.Option3 = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOption3Id).Select(y => y.Name).FirstOrDefaultAsync();
             }
 
             return View(productImages);
@@ -58,6 +59,7 @@ namespace WFHMicrositeMaintenance.Controllers
             productImage.Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync();
             productImage.Option1 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption1Id).Select(y => y.Name).FirstOrDefaultAsync();
             productImage.Option2 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption2Id).Select(y => y.Name).FirstOrDefaultAsync();
+            productImage.Option3 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption3Id).Select(y => y.Name).FirstOrDefaultAsync();
 
             return View(productImage);
         }
@@ -70,6 +72,7 @@ namespace WFHMicrositeMaintenance.Controllers
             productImage.Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync();
             productImage.Options1 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Fabric").ToListAsync(), "ProductOptionId", "Name");
             productImage.Options2 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Mesh").ToListAsync(), "ProductOptionId", "Name");
+            productImage.Options3 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Frame").ToListAsync(), "ProductOptionId", "Name");
             return View(productImage);
         }
 
@@ -78,7 +81,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductImageId,ProductId,ProductOption1Id,ProductOption2Id,FileName,FormFile")] ProductImage productImage)
+        public async Task<IActionResult> Create([Bind("ProductImageId,ProductId,ProductOption1Id,ProductOption2Id,ProductOption3Id,FileName,FormFile")] ProductImage productImage)
         {
             if (ModelState.IsValid)
             {
@@ -113,6 +116,7 @@ namespace WFHMicrositeMaintenance.Controllers
             productImage.Product = await _context.Product.Where(x => x.ProductId == productImage.ProductId).Select(y => y.Chair).FirstOrDefaultAsync();
             productImage.Options1 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == productImage.ProductId && x.Type == "Fabric").ToListAsync(), "ProductOptionId", "Name");
             productImage.Options2 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == productImage.ProductId && x.Type == "Mesh").ToListAsync(), "ProductOptionId", "Name");
+            productImage.Options3 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == productImage.ProductId && x.Type == "Frame").ToListAsync(), "ProductOptionId", "Name");
             return View(productImage);
         }
 
@@ -121,7 +125,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductImageId,ProductId,ProductOption1Id,ProductOption2Id,FileName,Image,FormFile")] ProductImage productImage)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductImageId,ProductId,ProductOption1Id,ProductOption2Id,ProductOption3Id,FileName,Image,FormFile")] ProductImage productImage)
         {
             if (id != productImage.ProductImageId)
             {
@@ -176,6 +180,7 @@ namespace WFHMicrositeMaintenance.Controllers
             productImage.Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync();
             productImage.Option1 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption1Id).Select(y => y.Name).FirstOrDefaultAsync();
             productImage.Option2 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption2Id).Select(y => y.Name).FirstOrDefaultAsync();
+            productImage.Option3 = await _context.ProductOption.Where(x => x.ProductOptionId == productImage.ProductOption3Id).Select(y => y.Name).FirstOrDefaultAsync();
 
             return View(productImage);
         }

@@ -21,9 +21,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Emailed)
             </th>
-            <td>
-                @Html.DisplayNameFor(model => model.InProduction)
-            </td>
             <th></th>
         </tr>
     </thead>
@@ -41,13 +38,19 @@
                 @Html.DisplayFor(modelItem => item.Emailed)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InProduction)
-            </td>
-            <td>
                 <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.UserId">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> |
                 <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                @if (User.Name() == "Ben" || User.Name() == "Dilanth" || User.Name() == "Shubreet")
+                {
+                    <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
+                }
+                @if (User.Name() == "Ben" || User.Name() == "Dilanth")
+                {
+                    <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
+                    <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                }
             </td>
         </tr>
         }
@@ -59,7 +62,7 @@
     <script>
         $(document).ready(function () {
             $('#index').DataTable({
-                "columnDefs": [{ "targets": 4, "orderable": false }]
+                "columnDefs": [{ "targets": 3, "orderable": false }]
             });
         });
     </script>

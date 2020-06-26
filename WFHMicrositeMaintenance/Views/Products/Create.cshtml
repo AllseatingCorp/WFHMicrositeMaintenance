@@ -13,8 +13,8 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="col-md-6">
             <div class="form-group">
-                <label asp-for="DealerCode" class="control-label col-md-4"></label>
-                <input asp-for="DealerCode" class="form-control col-md-8" />
+                <label asp-for="DealerCode" class="control-label"></label>
+                <input asp-for="DealerCode" class="form-control" />
                 <span asp-validation-for="DealerCode" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -28,6 +28,11 @@
                 <span asp-validation-for="Chair" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Language" class="control-label"></label>
+                <select asp-for="Language" asp-items="Model.Languages" class="form-control"></select>
+                <span asp-validation-for="Language" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="FormFile" class="control-label"></label>
                 <input asp-for="FormFile" class="form-control" />
                 <span asp-validation-for="FormFile" class="text-danger"></span>
@@ -36,6 +41,9 @@
                 <label asp-for="FormFile2" class="control-label"></label>
                 <input asp-for="FormFile2" class="form-control" />
                 <span asp-validation-for="FormFile2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </div>
         <div class="col-md-6">
@@ -55,13 +63,15 @@
                 <span asp-validation-for="VideoUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="SitFitGuide" class="control-label"></label>
+                <input asp-for="SitFitGuide" class="form-control" />
+                <span asp-validation-for="SitFitGuide" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="VerifyOnly" class="control-label"></label>
                 <input type="checkbox" asp-for="VerifyOnly" />
                 <span asp-validation-for="VerifyOnly" class="text-danger"></span>
             </div>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Create" class="btn btn-primary" />
         </div>
     </div>
 </form>

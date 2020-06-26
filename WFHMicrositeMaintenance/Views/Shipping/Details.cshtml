@@ -73,6 +73,13 @@
                     @Html.DisplayFor(model => model.User.TrackingNumber)
                 </dd>
             </dl>
+            @foreach (var item in Model.UserSelections)
+            {
+                <label>
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                    <label style="font-size:small">@item.Name</label>
+                </label>
+            }
         </div>
         <div class="col-sm-6">
             <div class="form-group">

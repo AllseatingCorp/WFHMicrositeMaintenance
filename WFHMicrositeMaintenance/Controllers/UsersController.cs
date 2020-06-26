@@ -29,7 +29,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            List<User> users = await _context.User.ToListAsync();
+            List<User> users = await _context.User.Where(x => x.Shipped == null).ToListAsync();
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
@@ -45,8 +45,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
 
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.UserId == id);
+            var user = await _context.User.FirstOrDefaultAsync(m => m.UserId == id);
             if (user == null)
             {
                 return NotFound();
@@ -58,7 +57,7 @@ namespace WFHMicrositeMaintenance.Controllers
         }
 
         // GET: Users/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             User user = new User
             {
@@ -68,13 +67,13 @@ namespace WFHMicrositeMaintenance.Controllers
             do
             { 
                 pin = new Random().Next(10000000, 99999999).ToString();
-                if (_context.User.Where(x => x.Pin == pin).FirstOrDefault() != null)
+                if (await _context.User.Where(x => x.Pin == pin).FirstOrDefaultAsync() != null)
                 {
                     pin = "";
                 }
             } while (pin == "");
             user.Pin = pin;
-            user.Products = _context.Product.ToList();
+            user.Products = await _context.Product.ToListAsync();
             user.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(user);
         }
@@ -121,6 +120,7 @@ namespace WFHMicrositeMaintenance.Controllers
                         BodyEncoding = System.Text.Encoding.UTF8
                     };
                     emessage.Bcc.Add("admin@allseating.com");
+                    emessage.Bcc.Add("wfh@allseating.com");
                     using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
                     {
                         UseDefaultCredentials = true
@@ -133,6 +133,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            user.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(user);
         }
 
@@ -199,6 +200,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            user.Languages = new SelectList(new List<string>() { "English", "French" });
             return View(user);
         }
 
@@ -234,7 +236,78 @@ namespace WFHMicrositeMaintenance.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Products/Emails/5
+        // GET: Users/Options
+        public async Task<IActionResult> Selections(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _context.User.Where(x => x.UserId == id).FirstOrDefaultAsync();
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).OrderBy(y => y.Type).ToListAsync();
+            Selections selections = new Selections();
+            selections.UserId = user.UserId;
+            selections.ProductId = user.ProductId;
+            selections.EmailAddress = user.EmailAddress;
+            foreach (var item in userSelections)
+            {
+                item.Name = user.EmailAddress;
+                item.Options = await _context.ProductOption.Where(x => x.ProductId == user.ProductId && x.Type == item.Type).ToListAsync();
+                foreach (var option in item.Options)
+                {
+                    if (option.ProductOptionId == item.ProductOptionId)
+                    {
+                        option.Default = true;
+                        switch (option.Type)
+                        {
+                            case "Fabric":
+                                selections.Fabric = option.ProductOptionId;
+                                break;
+                            case "Mesh":
+                                selections.Mesh = option.ProductOptionId;
+                                break;
+                            case "Frame":
+                                selections.Frame = option.ProductOptionId;
+                                break;
+                        }
+                    }
+                    else
+                        option.Default = false;
+                }
+            }
+            selections.UserSelections = userSelections;
+            return View(selections);
+        }
+
+        // POST: Users/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Selections(Selections selections)
+        {
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == selections.UserId).ToListAsync();
+            foreach (var item in userSelections)
+            {
+                switch (item.Type)
+                {
+                    case "Fabric":
+                        item.ProductOptionId = selections.Fabric;
+                        break;
+                    case "Mesh":
+                        item.ProductOptionId = selections.Mesh;
+                        break;
+                    case "Frame":
+                        item.ProductOptionId = selections.Frame;
+                        break;
+                }
+                _context.Entry(item).State = EntityState.Modified;
+            }
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Users/Emails/5
         public async Task<IActionResult> Emails(int? id)
         {
             if (id == null)
@@ -269,6 +342,7 @@ namespace WFHMicrositeMaintenance.Controllers
                     BodyEncoding = System.Text.Encoding.UTF8
                 };
                 emessage.Bcc.Add("admin@allseating.com");
+                emessage.Bcc.Add("wfh@allseating.com");
                 using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
                 {
                     UseDefaultCredentials = true
@@ -279,6 +353,38 @@ namespace WFHMicrositeMaintenance.Controllers
                 _context.Update(user);
                 await _context.SaveChangesAsync();
             }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Users/ResetProd/5
+        public async Task<IActionResult> ResetProd(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _context.User.Where(x => x.UserId == id).FirstOrDefaultAsync();
+            user.InProduction = null;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Users/ResetShip/5
+        public async Task<IActionResult> ResetShip(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            User user = await _context.User.Where(x => x.UserId == id).FirstOrDefaultAsync();
+            user.Shipped = null;
+            _context.Update(user);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

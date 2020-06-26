@@ -1,10 +1,10 @@
 ﻿@model WFHMicrositeMaintenance.Models.Production
 
 @{
-    ViewData["Title"] = "Start Production";
+    ViewData["Title"] = "Ship Order";
 }
 
-<h1>Production</h1>
+<h1>Shipping</h1>
 
 <h4>Order</h4>
 <hr />
@@ -93,6 +93,13 @@
                     @Html.DisplayFor(model => model.User.SpecialInstructions)
                 </dd>
             </dl>
+            @foreach (var item in Model.UserSelections)
+            {
+                <label>
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                    <label style="font-size:small">@item.Name</label>
+                </label>
+            }
         </div>
         <div class="col-sm-6">
             <div class="form-group">
@@ -101,7 +108,12 @@
         </div>
     </div>
     <div class="form-group">
-        <input type="button" id="btnSubmit" value="Start" class="btn btn-primary" onclick="GetOrderPdf();" />
+        <label asp-for="User.TrackingNumber" class="control-label col-md-4"></label>
+        <input asp-for="User.TrackingNumber" class="form-control col-md-4" />
+        <span asp-validation-for="User.TrackingNumber" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="button" id="btnSubmit" value="Ship" class="btn btn-primary" onclick="SubmitForm();" />
     </div>
 </form>
 
@@ -111,13 +123,19 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        function GetOrderPdf() {
+<script>
+    function SubmitForm() {
+        if ($('#User_TrackingNumber').val() != "") {
             var id = $('#User_UserId').val();
-            $.get("@Url.Action("GetOrderPdf", "Production")", { id: id }, function (data) {
+            var trackingnumber = $('#User_TrackingNumber').val();
+            $.get("@Url.Action("GetOrderPdf", "Shipping")", { id: id, trackingnumber: trackingnumber }, function (data) {
                 window.open("data:application/pdf;base64," + data, "_blank");
                 $('#formEdit').submit();
             });
         }
-    </script>
+        else {
+            alert("Enter the tracking number!");
+        }
+    }
+</script>
 }

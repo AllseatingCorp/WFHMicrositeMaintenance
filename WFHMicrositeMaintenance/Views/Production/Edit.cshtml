@@ -93,6 +93,13 @@
                     @Html.DisplayFor(model => model.User.SpecialInstructions)
                 </dd>
             </dl>
+            @foreach (var item in Model.UserSelections)
+            {
+                <label>
+                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                    <label style="font-size:small">@item.Name</label>
+                </label>
+            }
         </div>
         <div class="col-sm-6">
             <div class="form-group">
@@ -101,7 +108,7 @@
         </div>
     </div>
     <div class="form-group">
-        <input type="button" id="btnSubmit" value="Start" class="btn btn-primary" onclick="GetOrderPdf();" />
+        <input type="button" id="btnSubmit" value="Start" class="btn btn-primary" onclick="SubmitForm();" />
     </div>
 </form>
 
@@ -112,7 +119,7 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        function GetOrderPdf() {
+        function SubmitForm() {
             var id = $('#User_UserId').val();
             $.get("@Url.Action("GetOrderPdf", "Production")", { id: id }, function (data) {
                 window.open("data:application/pdf;base64," + data, "_blank");

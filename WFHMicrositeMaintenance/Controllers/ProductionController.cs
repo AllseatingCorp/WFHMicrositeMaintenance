@@ -65,20 +65,40 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            int fabric = 0;
+            int mesh = 0;
+            int frame = 0;
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
+            foreach (var item in userSelections)
+            {
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+            }
             Production production = new Production
             {
                 User = user,
-                Product = await _context.Product.FindAsync(user.ProductId)
+                Product = await _context.Product.FindAsync(user.ProductId),
+                UserSelections = userSelections,
+                Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
-            int fabric = 0;
-            int mesh = 0;
-            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
-            foreach (var item in userSelections)
-            {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
-            }
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
 
             return View(production);
         }
@@ -101,20 +121,40 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            int fabric = 0;
+            int mesh = 0;
+            int frame = 0;
+            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
+            foreach (var item in userSelections)
+            {
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+            }
             Production production = new Production
             {
                 User = user,
-                Product = await _context.Product.FindAsync(user.ProductId)
+                Product = await _context.Product.FindAsync(user.ProductId),
+                UserSelections = userSelections,
+                Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
-            int fabric = 0;
-            int mesh = 0;
-            List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
-            foreach (var item in userSelections)
-            {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
-            }
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
 
             return View(production);
         }
@@ -160,26 +200,58 @@ namespace WFHMicrositeMaintenance.Controllers
             Production production = new Production();
             int fabric = 0;
             int mesh = 0;
+            int frame = 0;
+            int code = 0;
+            string[] codes = new string[3] { "", "", "" };
             production.User = await _context.User.FindAsync(id);
             List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
             foreach (var item in userSelections)
             {
-                if (item.Type == "Fabric") fabric = item.ProductOptionId;
-                if (item.Type == "Mesh") mesh = item.ProductOptionId;
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    fabric = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                    codes[code] = "Fabric: " + productOption.StockCode;
+                    code++;
+                }
+                if (item.Type == "Mesh")
+                {
+                    mesh = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                    codes[code] = "  Mesh: " + productOption.StockCode;
+                    code++;
+                }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                    codes[code] = " Frame: " + productOption.StockCode;
+                }
             }
+            production.UserSelections = userSelections;
             production.User.PhoneNumber = String.Format("{0:(###) ###-####}", production.User.PhoneNumber);
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
+            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync();
             production.User.OrderNumber = production.User.UserId.ToString().PadLeft(8, '0');
 
             string address = production.User.Address1;
             if (!string.IsNullOrEmpty(production.User.Address2)) address += ", " + production.User.Address2;
-            List<string> data = new List<string>();
-            data.Add(production.User.AttnName);
-            data.Add(address);
-            data.Add(production.User.City + ", " + production.User.ProvinceState + " " + production.User.PostalZip);
-            data.Add(production.User.Country);
-            data.Add(production.User.OrderNumber);
-            data.Add(production.User.Completed.Value.ToShortDateString());
+            List<string> data = new List<string>
+            {
+                production.User.AttnName,
+                address,
+                production.User.City + ", " + production.User.ProvinceState + " " + production.User.PostalZip,
+                production.User.Country,
+                production.User.OrderNumber,
+                codes[0],
+                codes[1],
+                codes[2],
+                "0" + production.User.OrderNumber
+            };
             ZPLPrint(data);
 
             var report = new ViewAsPdf("ProdPdf", production)
