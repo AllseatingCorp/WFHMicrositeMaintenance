@@ -5,6 +5,7 @@
 }
 
 <h1>Index</h1>
+<h4>Users</h4>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -27,32 +28,32 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Emailed)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.UserId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> |
-                <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
-                @if (User.Name() == "Ben" || User.Name() == "Dilanth" || User.Name() == "Shubreet")
-                {
-                    <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
-                }
-                @if (User.Name() == "Ben" || User.Name() == "Dilanth")
-                {
-                    <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
-                    <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
-                }
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Emailed)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> |
+                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                    @if (User.Name() == "Ben" || User.Name() == "Dilanth" || User.Name() == "Shubreet")
+                    {
+                        <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
+                    }
+                    @if (User.Name() == "Ben" || User.Name() == "Dilanth")
+                    {
+                        <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
+                        <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                    }
+                </td>
+            </tr>
         }
     </tbody>
 </table>

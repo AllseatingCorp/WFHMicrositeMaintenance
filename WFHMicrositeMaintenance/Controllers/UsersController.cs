@@ -52,6 +52,27 @@ namespace WFHMicrositeMaintenance.Controllers
             }
             user.Notes = GetNotes(user.UserId);
             user.Product = await _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Chair).FirstOrDefaultAsync();
+            user.UserSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+            ProductOption productOption;
+            foreach (var item in user.UserSelections)
+            {
+                productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
+                if (item.Type == "Fabric")
+                {
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Mesh")
+                {
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+                if (item.Type == "Frame")
+                {
+                    item.Image = productOption.Image;
+                    item.Name = productOption.StockCode;
+                }
+            }
 
             return View(user);
         }
@@ -83,7 +104,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,ProductId,EmailAddress,Language,Pin,Address1,Address2,City,ProvinceState,PostalZip,Country,Commercial,Emailed,Completed,InProduction,Shipped")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,ProductId,EmailAddress,Language,Pin,Address1,Address2,City,ProvinceState,PostalZip,Country,SpecialInstructions,Commercial,Emailed,Completed,InProduction,Shipped")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -173,7 +194,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,ProductId,EmailAddress,Language,Pin,AttnName,PhoneNumber,Address1,Address2,City,ProvinceState,PostalZip,Country,Commercial,Emailed,Completed,InProduction,Shipped")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("UserId,ProductId,EmailAddress,Language,Pin,AttnName,PhoneNumber,Address1,Address2,City,ProvinceState,PostalZip,Country,SpecialInstructions,Commercial,Emailed,Completed,InProduction,Shipped")] User user)
         {
             if (id != user.UserId)
             {

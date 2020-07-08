@@ -73,7 +73,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductOptionId,ProductId,Type,Name,FormFile,Default,StockCode")] ProductOption productOption)
+        public async Task<IActionResult> Create([Bind("ProductOptionId,ProductId,Type,Name,FormFile,Default,StockCode,Disabled")] ProductOption productOption)
         {
             if (ModelState.IsValid)
             {
@@ -116,7 +116,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductOptionId,ProductId,Type,Name,FileName,Image,FormFile,Default,StockCode")] ProductOption productOption)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductOptionId,ProductId,Type,Name,FileName,Image,FormFile,Default,StockCode,Disabled")] ProductOption productOption)
         {
             if (id != productOption.ProductOptionId)
             {

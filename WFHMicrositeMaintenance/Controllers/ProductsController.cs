@@ -275,6 +275,88 @@ namespace WFHMicrositeMaintenance.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Products/Complete/5
+        public async Task<IActionResult> Ship(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            product.Languages = new SelectList(new List<string>() { "English", "French" });
+            return View(product);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Ship(int? id, Product product)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(product.TrackingNumber))
+            {
+                List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed != null && x.Completed != null && x.InProduction != null && x.Shipped == null).ToListAsync();
+                foreach (var user in users)
+                {
+                    user.Shipped = DateTime.Now;
+                    user.TrackingNumber = product.TrackingNumber;
+                    _context.Update(user);
+                    EmailUser(user);
+                }
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed != null && x.Completed != null && x.InProduction != null && x.Shipped == null && x.TrackingNumber != null).ToListAsync();
+                foreach (var user in users)
+                {
+                    user.Shipped = DateTime.Now;
+                    _context.Update(user);
+                    EmailUser(user);
+                }
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private void EmailUser(User user)
+        {
+            string url = _configuration.GetValue<string>("AppSettings:UpsUrl") + user.TrackingNumber;
+            string body = "Your customized Allseating order can now be tracked.<br/><br/><a href='" + url + "'>Click here</a> to track your chair.";
+            string file = _env.WebRootPath + "\\emails\\email3_" + user.Language + ".txt";
+            StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
+            if (sr != null)
+            {
+                string[] parameters = new string[] { url, user.TrackingNumber };
+                body = string.Format(sr.ReadToEnd(), parameters);
+                sr.Close();
+                sr.Dispose();
+            }
+            string subject = "Your custom chair can now be tracked!";
+            if (user.Language == "French") subject = "Il vous est maintenant possible de suivre votre chaise personnalisée!";
+            var emessage = new MailMessage("postmaster@allseating.com", user.EmailAddress, subject, body)
+            {
+                IsBodyHtml = true,
+                BodyEncoding = System.Text.Encoding.UTF8
+            };
+            emessage.Bcc.Add("admin@allseating.com");
+            emessage.Bcc.Add("wfh@allseating.com");
+            using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
+            {
+                UseDefaultCredentials = true
+            };
+            SmtpMail.Send(emessage);
+            emessage.Dispose();
+        }
+
         private bool ProductExists(int id)
         {
             return _context.Product.Any(e => e.ProductId == id);

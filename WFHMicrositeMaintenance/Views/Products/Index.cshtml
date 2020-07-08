@@ -5,6 +5,7 @@
 }
 
 <h1>Index</h1>
+<h4>Products</h4>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -47,6 +48,7 @@
                     {
                         <a asp-action="Emails" asp-route-id="@item.ProductId"> | Send Emails</a>
                         <a asp-action="Complete" asp-route-id="@item.ProductId"> | Complete Verification</a>
+                        <a asp-action="Ship" asp-route-id="@item.ProductId"> | Complete Shipping</a>
                     }
                 </td>
             </tr>

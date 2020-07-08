@@ -13,5 +13,6 @@ namespace WFHMicrositeMaintenance.Models
         public byte[] Image { get; set; }
         public bool Default { get; set; }
         public string StockCode { get; set; }
+        public bool Disabled { get; set; }
     }
 }

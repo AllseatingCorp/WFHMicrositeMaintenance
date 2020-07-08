@@ -1,0 +1,49 @@
+﻿@model WFHMicrositeMaintenance.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<form enctype="multipart/form-data" asp-action="Ship">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="ProductId" />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="DealerCode" class="control-label"></label>
+                <input asp-for="DealerCode" class="form-control" , readonly="readonly" />
+                <span asp-validation-for="DealerCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ponumber" class="control-label"></label>
+                <input asp-for="Ponumber" class="form-control" , readonly="readonly" />
+                <span asp-validation-for="Ponumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Chair" class="control-label"></label>
+                <input asp-for="Chair" class="form-control" , readonly="readonly" />
+                <span asp-validation-for="Chair" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrackingNumber" class="control-label"></label>
+                <input asp-for="TrackingNumber" class="form-control" />
+                <span asp-validation-for="TrackingNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Ship" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

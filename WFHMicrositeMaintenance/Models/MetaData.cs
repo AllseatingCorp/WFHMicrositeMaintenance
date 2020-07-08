@@ -59,6 +59,8 @@ namespace WFHMicrositeMaintenance.Models
         [Display(Name = "Order Number")]
         public string OrderNumber { get; set; }
         [NotMapped]
+        public List<UserSelection> UserSelections { get; set; }
+        [NotMapped]
         public List<Product> Products { get; set; }
         [NotMapped]
         public string Product { get; set; }
@@ -128,6 +130,11 @@ namespace WFHMicrositeMaintenance.Models
         [Display(Name = "Upload Dealer Logo File")]
         [NotMapped]
         public IFormFile FormFile2 { get; set; }
+
+        [Display(Name = "Tracking Number")]
+        [NotMapped]
+        public string TrackingNumber { get; set; }
+
         [NotMapped]
         public SelectList Languages { get; set; }
     }
