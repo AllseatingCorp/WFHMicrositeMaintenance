@@ -20,12 +20,12 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            List<Production> production = new List<Production>();
+            Production production = new Production() { List = new List<ProductionList>() };
             List<User> users = await _context.User.Where(x => x.Shipped != null).ToListAsync();
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
-                production.Add(new Production()
+                production.List.Add(new ProductionList()
                 {
                     User = user,
                     Product = await _context.Product.FindAsync(user.ProductId)

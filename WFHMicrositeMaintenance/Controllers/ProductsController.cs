@@ -225,6 +225,8 @@ namespace WFHMicrositeMaintenance.Controllers
                     string url = _configuration.GetValue<string>("AppSettings:UserUrl") + user.ProductId;
                     string body = "<a href='" + url + "'>Click here</a> to access the site.<br/><br/>Your log in PIN is " + user.Pin + ".";
                     string file = _env.WebRootPath + "\\emails\\email1_" + user.Language + ".txt";
+                    if (product.VerifyOnly)
+                        file = _env.WebRootPath + "\\emails\\email1v_" + user.Language + ".txt";
                     StreamReader sr = new StreamReader(file);
                     if (sr != null)
                     {

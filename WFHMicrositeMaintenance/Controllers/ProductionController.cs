@@ -6,9 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Session;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization.Internal;
@@ -33,18 +38,91 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            List<Production> production = new List<Production>();
-            List<User> users = await _context.User.Where(x => x.Completed != null && x.InProduction == null).ToListAsync();
-            foreach(var user in users)
+            SearchData data = new SearchData();
+            if (HttpContext.Session.Get<SearchData>("SearchData") != null)
+            {
+                data = HttpContext.Session.Get<SearchData>("SearchData");
+            }
+            Production production = new Production() { List = new List<ProductionList>() };
+            List<User> users = new List<User>();
+            StringBuilder QueryString1 = new StringBuilder("");
+            QueryString1.AppendFormat("SELECT * FROM dbo.[User] WHERE ");
+            if (!string.IsNullOrEmpty(data.Tracking))
+            {
+                if (QueryString1.ToString().EndsWith("WHERE "))
+                    QueryString1.AppendFormat("TrackingNumber='{0}' ", data.Tracking);
+                else
+                    QueryString1.AppendFormat("AND TrackingNumber='{0}' ", data.Tracking);
+            }
+            if (QueryString1.ToString().EndsWith("WHERE "))
+            {
+                if (data.Completed != default)
+                    QueryString1.AppendFormat("(Completed>='{0}' AND Completed<'{1}') ", data.Completed, data.Completed.AddDays(1));
+                else
+                    QueryString1.AppendFormat("Completed IS NOT NULL ");
+            }
+            else
+            {
+                if (data.Completed != default)
+                    QueryString1.AppendFormat("AND (Completed>='{0}' AND Completed<'{1}) ", data.Completed, data.Completed.AddDays(1));
+                else
+                    QueryString1.AppendFormat("AND Completed IS NOT NULL ");
+            }
+            QueryString1.AppendFormat("AND InProduction IS NULL");
+            users = _context.User.FromSqlRaw(QueryString1.ToString()).ToList();
+            bool add = false;
+            foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
-                production.Add(new Production()
+                List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == user.UserId).ToListAsync();
+                add = true;
+                if (data.Fabric != 0)
                 {
-                    User = user,
-                    Product = await _context.Product.FindAsync(user.ProductId)
-                });
+                    if (userSelections.Where(x => x.UserId == user.UserId && x.ProductOptionId == data.Fabric).FirstOrDefault() == null)
+                        add = false;
+                }
+                if (data.Mesh != 0)
+                {
+                    if (userSelections.Where(x => x.UserId == user.UserId && x.ProductOptionId == data.Mesh).FirstOrDefault() == null)
+                        add = false;
+                }
+                if (data.Frame != 0)
+                {
+                    if (userSelections.Where(x => x.UserId == user.UserId && x.ProductOptionId == data.Frame).FirstOrDefault() == null)
+                        add = false;
+                }
+                if (add)
+                {
+                    production.List.Add(new ProductionList()
+                    {
+                        User = user,
+                        Product = await _context.Product.FindAsync(user.ProductId)
+                    });
+                }
             }
+            production.Fabrics = new SelectList(await _context.ProductOption.Where(x => x.Type == "Fabric").ToListAsync(), "ProductOptionId", "Name");
+            production.Meshs = new SelectList(await _context.ProductOption.Where(x => x.Type == "Mesh").ToListAsync(), "ProductOptionId", "Name");
+            production.Frames = new SelectList(await _context.ProductOption.Where(x => x.Type == "Frame").ToListAsync(), "ProductOptionId", "Name");
             return View(production);
+        }
+
+        // POST: SearchPOs/
+        [HttpPost]
+        public ActionResult SearchUsers(IFormCollection formCollection)
+        {
+            SearchData data = new SearchData
+            {
+                Fabric = formCollection["Fabric"] != "All" ? Convert.ToInt32(formCollection["Fabric"]) : 0,
+                Mesh = formCollection["Mesh"] != "All" ? Convert.ToInt32(formCollection["Mesh"]) : 0,
+                Frame = formCollection["Frame"] != "All" ? Convert.ToInt32(formCollection["Frame"]) : 0,
+                Tracking = formCollection["Tracking"].ToString().Trim(),
+                Completed = formCollection["Completed"] != "" ? Convert.ToDateTime(formCollection["Completed"]) : default,
+                InProduction = formCollection["Production"] != "" ? Convert.ToDateTime(formCollection["Production"]) : default,
+                Shipped = formCollection["Shipped"] != "" ? Convert.ToDateTime(formCollection["Shipped"]) : default
+            };
+            HttpContext.Session.Set<SearchData>("SearchData", data);
+
+            return RedirectToAction("Index");
         }
 
         // GET: Users/Details/5
@@ -155,7 +233,6 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
-
             return View(production);
         }
 
@@ -302,6 +379,20 @@ namespace WFHMicrositeMaintenance.Controllers
         }
     }
 
+    public static class SessionExtensions
+    {
+        public static void Set<T>(this ISession session, string key, T value)
+        {
+            session.SetString(key, JsonSerializer.Serialize(value));
+        }
+
+        public static T Get<T>(this ISession session, string key)
+        {
+            var value = session.GetString(key);
+            return value == null ? default : JsonSerializer.Deserialize<T>(value);
+        }
+    }
+
     public class RawPrinterHelper
     {
         // Structure and API declarions:
@@ -342,16 +433,14 @@ namespace WFHMicrositeMaintenance.Controllers
         // Returns true on success, false on failure.
         public static bool SendBytesToPrinter(string szName, string szPrinterName, IntPtr pBytes, Int32 dwCount)
         {
-            Int32 dwError, dwWritten;
-            IntPtr hPrinter = new IntPtr(0);
+            _ = new IntPtr(0);
             DOCINFOA di = new DOCINFOA();
             bool bSuccess = false; // Assume failure unless you specifically succeed.
 
             di.pDocName = szName;
             di.pDataType = "RAW";
-
             // Open the printer.
-            if (OpenPrinter(szPrinterName.Normalize(), out hPrinter, IntPtr.Zero))
+            if (OpenPrinter(szPrinterName.Normalize(), out IntPtr hPrinter, IntPtr.Zero))
             {
                 // Start a document.
                 if (StartDocPrinter(hPrinter, 1, di))
@@ -360,7 +449,7 @@ namespace WFHMicrositeMaintenance.Controllers
                     if (StartPagePrinter(hPrinter))
                     {
                         // Write your bytes.
-                        bSuccess = WritePrinter(hPrinter, pBytes, dwCount, out dwWritten);
+                        bSuccess = WritePrinter(hPrinter, pBytes, dwCount, out int dwWritten);
                         _ = dwWritten;
                         EndPagePrinter(hPrinter);
                     }
@@ -372,16 +461,14 @@ namespace WFHMicrositeMaintenance.Controllers
             // about why not.
             if (bSuccess == false)
             {
-                dwError = Marshal.GetLastWin32Error();
+                _ = Marshal.GetLastWin32Error();
             }
             return bSuccess;
         }
 
         public static bool SendFileToPrinter(string szPrinterName, string szFileName, string sBarcode, string sName, string sCopies)
         {
-            bool bSuccess = false;
-
-            string szName = szFileName.Substring(0, szFileName.Length - 4);
+            string szName = szFileName[0..^4];
             // Open the file.
             FileStream fs = new FileStream(szFileName, FileMode.Open);
             // Create a BinaryReader on the file.
@@ -441,7 +528,7 @@ namespace WFHMicrositeMaintenance.Controllers
             // Copy the managed byte array into the unmanaged array.
             Marshal.Copy(bytes, 0, pUnmanagedBytes, nLength);
             // Send the unmanaged bytes to the printer.
-            bSuccess = SendBytesToPrinter(szName, szPrinterName, pUnmanagedBytes, nLength);
+            bool bSuccess = SendBytesToPrinter(szName, szPrinterName, pUnmanagedBytes, nLength);
             // Free the unmanaged memory that you allocated earlier.
             Marshal.FreeCoTaskMem(pUnmanagedBytes);
             fs.Close();

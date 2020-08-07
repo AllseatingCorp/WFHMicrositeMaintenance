@@ -61,6 +61,7 @@
     <script>
         $(document).ready(function () {
             $('#index').DataTable({
+                "stateSave": true,
                 "columnDefs": [{ "targets": 3, "orderable": false }]
             });
         });

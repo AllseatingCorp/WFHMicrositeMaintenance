@@ -1,4 +1,4 @@
-﻿@model IEnumerable<WFHMicrositeMaintenance.Models.Production>
+﻿@model WFHMicrositeMaintenance.Models.Production
 
 @{
     ViewData["Title"] = "Index";
@@ -7,6 +7,43 @@
 <h1>Index</h1>
 <h4>Production</h4>
 
+@using (Html.BeginForm("SearchUsers", "Production", FormMethod.Post, new { enctype = "multipart/form-data", id = "SearchUsers" }))
+{
+    <div class="well well-sm accordion" id="accordion">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapsePO">Search Filters</a>
+
+        <div id="collapsePO" class="collapse">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">Fabric</label>
+                        <select id="Fabric" name="Fabric" asp-items="Model.Fabrics" class="form-control col-md-8"><option>All</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4">Completed</label>
+                        <input id="Completed" name="Completed" class="form-control datecontrol col-md-8" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">Mesh</label>
+                        <select id="Mesh" name="Mesh" asp-items="Model.Meshs" class="form-control col-md-8"><option>All</option></select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">Frame</label>
+                        <select id="Frame" name="Frame" asp-items="Model.Frames" class="form-control col-md-8"><option>All</option></select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+            <input type="submit" value="Apply Filters" class="btn btn-secondary" /><hr />
+        </div>
+    </div>
+}
+<br />
 <table class="table" id="index">
     <thead>
         <tr>
@@ -29,30 +66,30 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.OrderNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.AttnName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Chair)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.DealerCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Ponumber)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.User.UserId">Start Production</a> |
-                    <a asp-action="Details" asp-route-id="@item.User.UserId">Details</a>
-                </td>
-            </tr>
-        }
+        @foreach (var item in Model.List)
+            {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.OrderNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.AttnName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Chair)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.DealerCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Ponumber)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.User.UserId">Start Production</a> |
+                <a asp-action="Details" asp-route-id="@item.User.UserId">Details</a>
+            </td>
+        </tr>
+            }
     </tbody>
 </table>
 
@@ -61,8 +98,35 @@
     <script>
         $(document).ready(function () {
             $('#index').DataTable({
+                "stateSave": true,
                 "columnDefs": [{ "targets": 5, "orderable": false }]
             });
+        });
+
+        $(function () { // will trigger when the document is ready
+            $('.datecontrol').datepicker({
+                format: 'mm/dd/yyyy',
+                todayHighlight: true,
+                autoclose: true,
+                todayBtn: "linked",
+                allowInputToggle: true,
+                EntryDate: '-3d',
+
+                showOn: "button",
+                buttonImage: "~/Images/Calendar.gif",
+                buttonImageOnly: true
+
+            });
+        });
+
+        $('#clearFilters').click(function () {
+            $('#Fabric').val(null);
+            $('#Mesh').val(null);
+            $('#Frame').val(null);
+            $('#Completed').val(null);
+            $('#Production').val(null);
+            $('#Shipped').val(null);
+            $('#Tracking').val(null);
         });
     </script>
 }

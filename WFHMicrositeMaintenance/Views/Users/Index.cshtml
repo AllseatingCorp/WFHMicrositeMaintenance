@@ -39,18 +39,26 @@
                     @Html.DisplayFor(modelItem => item.Emailed)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> |
+                    @if (item.Shipped == null)
+                    {
+                    <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a>  @Html.Raw("|")
+                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a>  @Html.Raw("|")
+                    <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a>  @Html.Raw("|")
                     <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
                     @if (User.Name() == "Ben" || User.Name() == "Dilanth" || User.Name() == "Shubreet")
-                    {
-                        <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
-                    }
+                        {
+                    <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
+                        }
                     @if (User.Name() == "Ben" || User.Name() == "Dilanth")
+                        {
+                    <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
+                    <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                        }
+                    }
+                    else
                     {
-                        <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
-                        <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a>  @Html.Raw("|")
+                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
                     }
                 </td>
             </tr>
@@ -63,6 +71,7 @@
     <script>
         $(document).ready(function () {
             $('#index').DataTable({
+                "stateSave": true,
                 "columnDefs": [{ "targets": 3, "orderable": false }]
             });
         });

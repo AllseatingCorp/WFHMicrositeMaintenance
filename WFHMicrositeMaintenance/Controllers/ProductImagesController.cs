@@ -67,12 +67,14 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: ProductImages/Create
         public async Task<IActionResult> Create(int id)
         {
-            ProductImage productImage = new ProductImage();
-            productImage.ProductId = id;
-            productImage.Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync();
-            productImage.Options1 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Fabric").ToListAsync(), "ProductOptionId", "Name");
-            productImage.Options2 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Mesh").ToListAsync(), "ProductOptionId", "Name");
-            productImage.Options3 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Frame").ToListAsync(), "ProductOptionId", "Name");
+            ProductImage productImage = new ProductImage
+            {
+                ProductId = id,
+                Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync(),
+                Options1 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Fabric").ToListAsync(), "ProductOptionId", "Name"),
+                Options2 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Mesh").ToListAsync(), "ProductOptionId", "Name"),
+                Options3 = new SelectList(await _context.ProductOption.Where(x => x.ProductId == id && x.Type == "Frame").ToListAsync(), "ProductOptionId", "Name")
+            };
             return View(productImage);
         }
 

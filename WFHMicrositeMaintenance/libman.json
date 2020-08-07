@@ -5,6 +5,10 @@
     {
       "library": "datatables@1.10.20",
       "destination": "wwwroot/lib/datatables/"
+    },
+    {
+      "library": "bootstrap-datepicker@1.9.0",
+      "destination": "wwwroot/lib/bootstrap-datepicker/"
     }
   ]
 }

@@ -31,12 +31,12 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            List<Production> production = new List<Production>();
+            Production production = new Production() { List = new List<ProductionList>() };
             List<User> users = await _context.User.Where(x => x.Completed != null && x.InProduction != null && (x.Shipped == null || x.TrackingNumber == null)).ToListAsync();
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
-                production.Add(new Production()
+                production.List.Add(new ProductionList()
                 {
                     User = user,
                     Product = await _context.Product.FindAsync(user.ProductId)
@@ -205,6 +205,7 @@ namespace WFHMicrositeMaintenance.Controllers
             Production production = new Production();
             int fabric = 0;
             int mesh = 0;
+            int frame = 0;
             production.User = await _context.User.FindAsync(id);
             List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
             ProductOption productOption;
@@ -223,10 +224,16 @@ namespace WFHMicrositeMaintenance.Controllers
                     item.Image = productOption.Image;
                     item.Name = productOption.Name;
                 }
+                if (item.Type == "Frame")
+                {
+                    frame = item.ProductOptionId;
+                    item.Image = productOption.Image;
+                    item.Name = productOption.Name;
+                }
             }
             production.UserSelections = userSelections;
             production.User.PhoneNumber = String.Format("{0:(###) ###-####}", production.User.PhoneNumber);
-            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh).Select(y => y.Image).FirstOrDefaultAsync();
+            production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync();
             production.User.OrderNumber = production.User.UserId.ToString().PadLeft(8, '0');
             production.User.TrackingNumber = trackingnumber;
 

@@ -29,7 +29,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            List<User> users = await _context.User.Where(x => x.Shipped == null).ToListAsync();
+            List<User> users = await _context.User.ToListAsync();
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
@@ -110,6 +110,7 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
+                var product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == user.ProductId);
                 List<ProductOption> productOptions = await _context.ProductOption.Where(x => x.ProductId == user.ProductId).ToListAsync();
                 foreach(var item in productOptions)
                 {
@@ -125,6 +126,8 @@ namespace WFHMicrositeMaintenance.Controllers
                     string url = _configuration.GetValue<string>("AppSettings:UserUrl") + user.ProductId;
                     string body = "<a href='" + url + "'>Click here</a> to access the site.<br/><br/>Your log in PIN is " + user.Pin + ".";
                     string file = _env.WebRootPath + "\\emails\\email1_" + user.Language + ".txt";
+                    if (product.VerifyOnly)
+                        file = _env.WebRootPath + "\\emails\\email1v_" + user.Language + ".txt";
                     StreamReader sr = new StreamReader(file);
                     if (sr != null)
                     {
@@ -344,35 +347,93 @@ namespace WFHMicrositeMaintenance.Controllers
 
             if (!string.IsNullOrEmpty(user.EmailAddress))
             {
-                string url = _configuration.GetValue<string>("AppSettings:UserUrl") + user.ProductId;
-                string body = "<a href='" + url + "'>Click here</a> to access the site.<br/><br/>Your log in PIN is " + user.Pin + ".";
-                string file = _env.WebRootPath + "\\emails\\email1_" + user.Language + ".txt";
-                StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
-                if (sr != null)
+                if (user.Completed == null)
                 {
-                    string[] parameters = new string[] { url, user.Pin };
-                    body = string.Format(sr.ReadToEnd(), parameters);
-                    sr.Close();
-                    sr.Dispose();
+                    var product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == user.ProductId);
+                    string url = _configuration.GetValue<string>("AppSettings:UserUrl") + user.ProductId;
+                    string body = "<a href='" + url + "'>Click here</a> to access the site.<br/><br/>Your log in PIN is " + user.Pin + ".";
+                    string file = _env.WebRootPath + "\\emails\\email1_" + user.Language + ".txt";
+                    if (product.VerifyOnly)
+                        file = _env.WebRootPath + "\\emails\\email1v_" + user.Language + ".txt";
+                    StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
+                    if (sr != null)
+                    {
+                        string[] parameters = new string[] { url, user.Pin };
+                        body = string.Format(sr.ReadToEnd(), parameters);
+                        sr.Close();
+                        sr.Dispose();
+                    }
+                    string subject = "The way we sit matters.";
+                    if (user.Language == "French") subject = "La position dans laquelle nous nous assoyons révèle bien des choses.";
+                    var emessage = new MailMessage("postmaster@allseating.com", user.EmailAddress, subject, body)
+                    {
+                        IsBodyHtml = true,
+                        BodyEncoding = System.Text.Encoding.UTF8
+                    };
+                    emessage.Bcc.Add("admin@allseating.com");
+                    emessage.Bcc.Add("wfh@allseating.com");
+                    using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
+                    {
+                        UseDefaultCredentials = true
+                    };
+                    SmtpMail.Send(emessage);
+                    emessage.Dispose();
+                    user.Emailed = DateTime.Now;
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
                 }
-                string subject = "The way we sit matters.";
-                if (user.Language == "French") subject = "La position dans laquelle nous nous assoyons révèle bien des choses.";
-                var emessage = new MailMessage("postmaster@allseating.com", user.EmailAddress, subject, body)
+                else
                 {
-                    IsBodyHtml = true,
-                    BodyEncoding = System.Text.Encoding.UTF8
-                };
-                emessage.Bcc.Add("admin@allseating.com");
-                emessage.Bcc.Add("wfh@allseating.com");
-                using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
-                {
-                    UseDefaultCredentials = true
-                };
-                SmtpMail.Send(emessage);
-                emessage.Dispose();
-                user.Emailed = DateTime.Now;
-                _context.Update(user);
-                await _context.SaveChangesAsync();
+                    var userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
+                    int option1 = 0;
+                    int option2 = 0;
+                    int option3 = 0;
+                    foreach (var item in userSelections)
+                    {
+                        switch (item.Type)
+                        {
+                            case "Fabric":
+                                option1 = item.ProductOptionId;
+                                break;
+                            case "Mesh":
+                                option2 = item.ProductOptionId;
+                                break;
+                            case "Frame":
+                                option3 = item.ProductOptionId;
+                                break;
+                        }
+                    }
+                    var productImage = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == option1 && x.ProductOption2Id == option2 && x.ProductOption3Id == option3).FirstOrDefaultAsync();
+                    string url = "";
+                    string body = "Your address and selections have been saved.<br/><br/><a href='" + url + ">Click here</a> to review your selections.";
+                    string file = _env.WebRootPath + "\\emails\\email2_" + user.Language + ".txt";
+                    StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
+                    if (sr != null)
+                    {
+                        string[] parameters = new string[] { user.UserId.ToString().PadLeft(8, '0'), url };
+                        body = string.Format(sr.ReadToEnd(), parameters);
+                        sr.Close();
+                        sr.Dispose();
+                    }
+                    string subject = user.Language == "English" ? "Thank you for your order!" : "Nous vous remercions de votre commande!";
+                    var emessage = new MailMessage("postmaster@allseating.com", user.EmailAddress, subject, body);
+                    emessage.Bcc.Add("admin@allseating.com");
+                    emessage.Bcc.Add("wfh@allseating.com");
+                    emessage.BodyEncoding = System.Text.Encoding.UTF8;
+                    if (productImage != null)
+                    {
+                        emessage.Attachments.Add(new Attachment(new MemoryStream(productImage.Image), "Your Chair"));
+                        emessage.Attachments[0].ContentId = "imageRef";
+                    }
+                    emessage.IsBodyHtml = true;
+                    emessage.BodyEncoding = System.Text.Encoding.UTF8;
+                    using (SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25))
+                    {
+                        SmtpMail.UseDefaultCredentials = true;
+                        SmtpMail.Send(emessage);
+                        emessage.Dispose();
+                    }
+                }
             }
 
             return RedirectToAction(nameof(Index));
