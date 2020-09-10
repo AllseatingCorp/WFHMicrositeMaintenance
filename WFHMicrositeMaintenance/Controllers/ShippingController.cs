@@ -250,7 +250,8 @@ namespace WFHMicrositeMaintenance.Controllers
 
         private void EmailUser(User user)
         {
-            string url = _configuration.GetValue<string>("AppSettings:UpsUrl") + user.TrackingNumber;
+            string shipper = _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Shipper).FirstOrDefault() == "UPS" ? "AppSettings:UpsUrl" : "AppSettings:FdxUrl";
+            string url = _configuration.GetValue<string>(shipper) + user.TrackingNumber;
             string body = "Your customized Allseating order can now be tracked.<br/><br/><a href='" + url + "'>Click here</a> to track your chair.";
             string file = _env.WebRootPath + "\\emails\\email3_" + user.Language + ".txt";
             StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);

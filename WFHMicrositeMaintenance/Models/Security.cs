@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace WFHMicrositeMaintenance.Models
 {
@@ -11,32 +14,25 @@ namespace WFHMicrositeMaintenance.Models
     {
         public static bool IsInGroup(this ClaimsPrincipal User, string GroupName)
         {
-            var groups = new List<string>();
-
-            var wi = (WindowsIdentity)User.Identity;
-            if (wi.Groups != null)
+            if (User.Identity.IsAuthenticated)
             {
-                foreach (var group in wi.Groups)
+                List<string> roles = new List<string>();
+                foreach (var claim in User.Claims)
                 {
-                    try
-                    {
-                        groups.Add(group.Translate(typeof(NTAccount)).ToString());
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                    roles.Add(claim.Value);
                 }
-                return groups.Contains("ALLSEATING\\" + GroupName);
+                return roles.Contains(GroupName);
             }
             return false;
         }
 
         public static string Name(this ClaimsPrincipal User)
         {
-            string name = User.Identity.Name.Substring(11);
-            name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
-            return name;
+            if (User.Identity.IsAuthenticated)
+            {
+                return User.Identity.Name;
+            }
+            return "";
         }
     }
 }

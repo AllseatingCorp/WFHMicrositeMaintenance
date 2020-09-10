@@ -15,7 +15,7 @@ namespace WFHMicrositeMaintenance.Models
         {
         }
 
-        public virtual DbSet<Printer> Printer { get; set; }
+        public virtual DbSet<MasterPostalZipP2> MasterPostalZipP2 { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductImage> ProductImage { get; set; }
         public virtual DbSet<ProductOption> ProductOption { get; set; }
@@ -26,17 +26,17 @@ namespace WFHMicrositeMaintenance.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Printer>(entity =>
+            modelBuilder.Entity<MasterPostalZipP2>(entity =>
             {
                 entity.HasNoKey();
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.EmailAddress)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.PrinterId)
-                    .HasColumnName("PrinterID")
-                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.PostalCode)
+                    .HasMaxLength(15)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -66,6 +66,8 @@ namespace WFHMicrositeMaintenance.Models
                 entity.Property(e => e.Ponumber)
                     .HasColumnName("PONumber")
                     .HasMaxLength(30);
+
+                entity.Property(e => e.Shipper).HasMaxLength(10);
 
                 entity.Property(e => e.SitFitGuide).HasMaxLength(50);
 

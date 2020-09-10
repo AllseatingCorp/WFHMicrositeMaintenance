@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +40,14 @@ namespace WFHMicrositeMaintenance
                 options.Cookie.IsEssential = true;
             });
 
+            services.AddAuthentication("CookieAuthentication").AddCookie("CookieAuthentication", options =>
+            {
+                options.Cookie.Name = ".WFHMicrositeMaintenance.Login";
+                options.Cookie.HttpOnly = true;
+                options.LoginPath = "/Account";
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+            });
+
             services.AddControllersWithViews();
 
             services.AddDbContext<WFHMicrositeContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MicrositeDatabase")));
@@ -62,6 +72,8 @@ namespace WFHMicrositeMaintenance
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

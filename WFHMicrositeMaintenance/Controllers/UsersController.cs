@@ -270,10 +270,12 @@ namespace WFHMicrositeMaintenance.Controllers
 
             User user = await _context.User.Where(x => x.UserId == id).FirstOrDefaultAsync();
             List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).OrderBy(y => y.Type).ToListAsync();
-            Selections selections = new Selections();
-            selections.UserId = user.UserId;
-            selections.ProductId = user.ProductId;
-            selections.EmailAddress = user.EmailAddress;
+            Selections selections = new Selections
+            {
+                UserId = user.UserId,
+                ProductId = user.ProductId,
+                EmailAddress = user.EmailAddress
+            };
             foreach (var item in userSelections)
             {
                 item.Name = user.EmailAddress;
@@ -427,12 +429,12 @@ namespace WFHMicrositeMaintenance.Controllers
                     }
                     emessage.IsBodyHtml = true;
                     emessage.BodyEncoding = System.Text.Encoding.UTF8;
-                    using (SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25))
+                    using SmtpClient SmtpMail = new SmtpClient("allfs90.allseating.com", 25)
                     {
-                        SmtpMail.UseDefaultCredentials = true;
-                        SmtpMail.Send(emessage);
-                        emessage.Dispose();
-                    }
+                        UseDefaultCredentials = true
+                    };
+                    SmtpMail.Send(emessage);
+                    emessage.Dispose();
                 }
             }
 

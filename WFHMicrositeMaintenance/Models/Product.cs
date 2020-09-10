@@ -21,5 +21,6 @@ namespace WFHMicrositeMaintenance.Models
         public string SitFitGuide { get; set; }
         public bool VerifyOnly { get; set; }
         public bool Completed { get; set; }
+        public string Shipper { get; set; }
     }
 }

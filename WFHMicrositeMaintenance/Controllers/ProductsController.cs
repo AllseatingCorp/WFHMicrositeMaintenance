@@ -58,6 +58,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 Language = "English"
             };
             product.Languages = new SelectList(new List<string>() { "English", "French" });
+            product.Shippers = new SelectList(new List<string>() { "FEDEX", "UPS" });
             return View(product);
         }
 
@@ -66,7 +67,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,Language,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,Language,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -90,6 +91,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return RedirectToAction(nameof(Index));
             }
             product.Languages = new SelectList(new List<string>() { "English", "French" });
+            product.Shippers = new SelectList(new List<string>() { "FEDEX", "UPS" });
             return View(product);
         }
 
@@ -107,6 +109,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
             product.Languages = new SelectList(new List<string>() { "English", "French" });
+            product.Shippers = new SelectList(new List<string>() { "FEDEX", "UPS" });
             return View(product);
         }
 
@@ -115,7 +118,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,Language,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,Language,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -158,6 +161,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return RedirectToAction(nameof(Index));
             }
             product.Languages = new SelectList(new List<string>() { "English", "French" });
+            product.Shippers = new SelectList(new List<string>() { "FEDEX", "UPS" });
             return View(product);
         }
 
@@ -204,6 +208,12 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
 
+            if (System.IO.File.Exists(_env.WebRootPath + "//EmailLog.txt"))
+            {
+                System.IO.File.Delete(_env.WebRootPath + "//EmailLog.txt");
+            }
+            StreamWriter sw = new StreamWriter(_env.WebRootPath + "//EmailLog.txt", true);
+
             List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed == null).Take(_configuration.GetValue<int>("AppSettings:EmailCount")).ToListAsync();
             foreach (var user in users)
             {
@@ -247,13 +257,30 @@ namespace WFHMicrositeMaintenance.Controllers
                     {
                         UseDefaultCredentials = true
                     };
-                    SmtpMail.Send(emessage);
-                    emessage.Dispose();
-                    user.Emailed = DateTime.Now;
-                    _context.Update(user);
+                    try
+                    {
+                        SmtpMail.Send(emessage);
+                        emessage.Dispose();
+                        user.Emailed = DateTime.Now;
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch
+                    {
+                        if (sw != null)
+                        {
+                            sw.WriteLine("Unable to send email to " + user.EmailAddress);
+                            sw.Flush();
+                        }
+                    }
                 }
             }
-            await _context.SaveChangesAsync();
+
+            if (sw != null)
+            {
+                sw.Close();
+                sw.Dispose();
+            }
 
             return RedirectToAction(nameof(Index));
         }
@@ -331,7 +358,8 @@ namespace WFHMicrositeMaintenance.Controllers
 
         private void EmailUser(User user)
         {
-            string url = _configuration.GetValue<string>("AppSettings:UpsUrl") + user.TrackingNumber;
+            string shipper = _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Shipper).FirstOrDefault() == "UPS" ? "AppSettings:UpsUrl" : "AppSettings:FdxUrl";
+            string url = _configuration.GetValue<string>(shipper) + user.TrackingNumber;
             string body = "Your customized Allseating order can now be tracked.<br/><br/><a href='" + url + "'>Click here</a> to track your chair.";
             string file = _env.WebRootPath + "\\emails\\email3_" + user.Language + ".txt";
             StreamReader sr = new StreamReader(file, System.Text.Encoding.UTF8);
@@ -355,8 +383,12 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 UseDefaultCredentials = true
             };
-            SmtpMail.Send(emessage);
-            emessage.Dispose();
+            try
+            {
+                SmtpMail.Send(emessage);
+                emessage.Dispose();
+            }
+            catch { }
         }
 
         private bool ProductExists(int id)

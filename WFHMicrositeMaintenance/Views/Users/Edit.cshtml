@@ -20,7 +20,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label asp-for="ProductId" class="control-label col-md-4"></label>
-                <select asp-for="ProductId" asp-items="@(new SelectList(Model.Products, "ProductId", "Chair"))" class="form-control col-md-8"><option>Select product</option></select>
+                <select asp-for="ProductId" asp-items="@(new SelectList(Model.Products, "ProductId", "PONumber"))" class="form-control col-md-8"><option>Select product</option></select>
                 <span asp-validation-for="ProductId" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -121,6 +121,9 @@ namespace WFHMicrositeMaintenance.Models
 
             [Display(Name = "Verify Only")]
             public bool VerifyOnly { get; set; }
+
+            [Display(Name = "Shipper")]
+            public string Shipper { get; set; }
         }
 
         [Display(Name = "Upload Company Logo File")]
@@ -137,6 +140,9 @@ namespace WFHMicrositeMaintenance.Models
 
         [NotMapped]
         public SelectList Languages { get; set; }
+
+        [NotMapped]
+        public SelectList Shippers { get; set; }
     }
 
     [ModelMetadataType(typeof(ProductOptionMetadata))]
