@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using WFHMicrositeMaintenance.Models;
 
 namespace WFHMicrositeMaintenance.Controllers
 {
+    [Authorize]
     public class ShippingController : Controller
     {
         private readonly WFHMicrositeContext _context;

@@ -4,11 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.IISIntegration;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +30,6 @@ namespace WFHMicrositeMaintenance
 
             services.AddSession(options =>
             {
-                options.Cookie.Name = ".WFHMicrositeMaintenance.Session";
                 options.IdleTimeout = TimeSpan.FromMinutes(60);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
@@ -45,7 +40,7 @@ namespace WFHMicrositeMaintenance
                 options.Cookie.Name = ".WFHMicrositeMaintenance.Login";
                 options.Cookie.HttpOnly = true;
                 options.LoginPath = "/Account";
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
             });
 
             services.AddControllersWithViews();

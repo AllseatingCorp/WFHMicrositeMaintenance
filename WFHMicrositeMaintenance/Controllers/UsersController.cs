@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using WFHMicrositeMaintenance.Models;
 
 namespace WFHMicrositeMaintenance.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         private readonly WFHMicrositeContext _context;
@@ -507,7 +509,7 @@ namespace WFHMicrositeMaintenance.Controllers
         {
             if (!string.IsNullOrEmpty(notes))
             {
-                _context.UserNote.Add(new UserNote() { UserId = id, Csuser = User.Name(), Note = notes, Date = DateTime.Now });
+                _context.UserNote.Add(new UserNote() { UserId = id, Csuser = User.Identity.Name, Note = notes, Date = DateTime.Now });
                 _context.SaveChanges();
             }
 

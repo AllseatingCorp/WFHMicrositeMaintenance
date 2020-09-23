@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using WFHMicrositeMaintenance.Models;
 
 namespace WFHMicrositeMaintenance.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly WFHMicrositeContext _context;

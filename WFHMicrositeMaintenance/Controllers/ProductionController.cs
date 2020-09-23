@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ using WFHMicrositeMaintenance.Models;
 
 namespace WFHMicrositeMaintenance.Controllers
 {
+    [Authorize]
     public class ProductionController : Controller
     {
         private readonly WFHMicrositeContext _context;

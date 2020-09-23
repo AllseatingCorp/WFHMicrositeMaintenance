@@ -41,24 +41,24 @@
                 <td>
                     @if (item.Shipped == null)
                     {
-                    <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a>  @Html.Raw("|")
-                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a>  @Html.Raw("|")
-                    <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a>  @Html.Raw("|")
-                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
-                    @if (User.Name() == "Ben" || User.Name() == "Dilanth" || User.Name() == "Shubreet")
+                        <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> @Html.Raw("|")
+                        <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
+                        <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> @Html.Raw("|")
+                        <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower() == "dilanth" || User.Identity.Name.ToLower() == "shubreet")
                         {
-                    <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
+                            <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
                         }
-                    @if (User.Name() == "Ben" || User.Name() == "Dilanth")
+                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower() == "dilanth" || User.Identity.Name.ToLower() == "shubreet")
                         {
-                    <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
-                    <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                            <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
+                            <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
                         }
                     }
                     else
                     {
-                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a>  @Html.Raw("|")
-                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                        <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
+                        <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
                     }
                 </td>
             </tr>

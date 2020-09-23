@@ -83,6 +83,7 @@ namespace WFHMicrositeMaintenance.Models
         [NotMapped]
         public List<ProductOption> Options { get; set; }
     }
+
     [ModelMetadataType(typeof(ProductMetadata))]
     public partial class Product
     {
