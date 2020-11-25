@@ -262,7 +262,7 @@ namespace WFHMicrositeMaintenance.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Users/Options
+        // GET: Users/Options/5
         public async Task<IActionResult> Selections(int? id)
         {
             if (id == null)
@@ -308,7 +308,7 @@ namespace WFHMicrositeMaintenance.Controllers
             return View(selections);
         }
 
-        // POST: Users/Delete/5
+        // POST: Users/Options
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Selections(Selections selections)
