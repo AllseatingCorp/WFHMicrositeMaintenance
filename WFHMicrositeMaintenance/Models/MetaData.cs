@@ -99,6 +99,9 @@ namespace WFHMicrositeMaintenance.Models
             [Display(Name = "Chair Name")]
             public string Chair { get; set; }
 
+            [Display(Name = "Chair Image")]
+            public string Image { get; set; }
+
             [Display(Name = "Language")]
             public string Language { get; set; }
 
@@ -134,6 +137,10 @@ namespace WFHMicrositeMaintenance.Models
         [Display(Name = "Upload Dealer Logo File")]
         [NotMapped]
         public IFormFile FormFile2 { get; set; }
+
+        [Display(Name = "Upload Chair Image File")]
+        [NotMapped]
+        public IFormFile FormFile3 { get; set; }
 
         [Display(Name = "Tracking Number")]
         [NotMapped]

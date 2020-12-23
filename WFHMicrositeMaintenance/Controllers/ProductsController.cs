@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -69,7 +70,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,Language,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,DealerCode,Ponumber,Chair,FormFile3,Language,FormFile,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper,Config")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -86,6 +87,12 @@ namespace WFHMicrositeMaintenance.Controllers
                     await product.FormFile2.CopyToAsync(ms);
                     product.LogoFile2 = product.FormFile2.FileName;
                     product.LogoImage2 = ms.ToArray();
+                }
+                if (product.FormFile3 != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    await product.FormFile3.CopyToAsync(ms);
+                    product.Image = ms.ToArray();
                 }
 
                 _context.Add(product);
@@ -120,7 +127,7 @@ namespace WFHMicrositeMaintenance.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,Language,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,DealerCode,Ponumber,Chair,Image,FormFile3,Language,LogoFile,LogoImage,FormFile,LogoFile2,LogoImage2,FormFile2,InstallGuide,UserGuide,VideoUrl,SitFitGuide,VerifyOnly,Shipper,Config")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -142,6 +149,12 @@ namespace WFHMicrositeMaintenance.Controllers
                     await product.FormFile2.CopyToAsync(ms);
                     product.LogoFile2 = product.FormFile2.FileName;
                     product.LogoImage2 = ms.ToArray();
+                }
+                if (product.FormFile3 != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    await product.FormFile3.CopyToAsync(ms);
+                    product.Image = ms.ToArray();
                 }
 
                 try
@@ -358,6 +371,27 @@ namespace WFHMicrositeMaintenance.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Users/OrderEmail/5
+        public async Task<IActionResult> OrderEmails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            List<User> users = await _context.User.Where(x => x.ProductId == id && x.Emailed != null && x.Completed != null).ToListAsync();
+            if (users != null)
+            {
+                string apiUrl = _configuration.GetValue<string>("AppSettings:ApiUrl");
+                foreach (var user in users)
+                {
+                    SendWebApiMessage(apiUrl + "email/" + user.UserId + "/5", "GET", "");
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private void EmailUser(User user)
         {
             string shipper = _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Shipper).FirstOrDefault() == "UPS" ? "AppSettings:UpsUrl" : "AppSettings:FdxUrl";
@@ -391,6 +425,30 @@ namespace WFHMicrositeMaintenance.Controllers
                 emessage.Dispose();
             }
             catch { }
+        }
+
+        private string SendWebApiMessage(string url, string method, string json)
+        {
+            string data = "";
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
+            request.Proxy = null;
+            request.ServerCertificateValidationCallback = delegate { return true; };
+            request.ContentType = "application/json";
+            request.Method = method;
+            if (json != "")
+            {
+                StreamWriter stream = new StreamWriter(request.GetRequestStream());
+                stream.Write(json);
+                stream.Flush();
+            }
+            try
+            {
+                WebResponse response = request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                data = reader.ReadToEnd();
+            }
+            catch (Exception ex) { data = ex.Message; }
+            return data;
         }
 
         private bool ProductExists(int id)

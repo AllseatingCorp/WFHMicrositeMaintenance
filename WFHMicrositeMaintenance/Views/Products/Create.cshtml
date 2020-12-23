@@ -28,6 +28,11 @@
                 <span asp-validation-for="Chair" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="FormFile3" class="control-label"></label>
+                <input asp-for="FormFile3" class="form-control" />
+                <span asp-validation-for="FormFile3" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Language" class="control-label"></label>
                 <select asp-for="Language" asp-items="Model.Languages" class="form-control"></select>
                 <span asp-validation-for="Language" class="text-danger"></span>
@@ -43,15 +48,15 @@
                 <span asp-validation-for="FormFile2" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Shipper" class="control-label"></label>
-                <select asp-for="Shipper" asp-items="Model.Shippers" class="form-control"></select>
-                <span asp-validation-for="Shipper" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </div>
         <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Shipper" class="control-label"></label>
+                <select asp-for="Shipper" asp-items="Model.Shippers" class="form-control"></select>
+                <span asp-validation-for="Shipper" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="InstallGuide" class="control-label"></label>
                 <input asp-for="InstallGuide" class="form-control" />
@@ -76,6 +81,11 @@
                 <label asp-for="VerifyOnly" class="control-label"></label>
                 <input type="checkbox" asp-for="VerifyOnly" />
                 <span asp-validation-for="VerifyOnly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config" class="control-label"></label>
+                <input asp-for="Config" class="form-control" />
+                <span asp-validation-for="Config" class="text-danger"></span>
             </div>
         </div>
     </div>

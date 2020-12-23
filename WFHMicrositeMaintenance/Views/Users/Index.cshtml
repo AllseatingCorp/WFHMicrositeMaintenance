@@ -45,14 +45,12 @@
                         <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
                         <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> @Html.Raw("|")
                         <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
-                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower() == "dilanth" || User.Identity.Name.ToLower() == "shubreet kaur")
+                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth") || User.Identity.Name.ToLower() == "shubreet kaur")
                         {
                             <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
-                        }
-                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower() == "dilanth" || User.Identity.Name.ToLower() == "shubreet kaur")
-                        {
                             <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
                             <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
+                            <a asp-action="OrderEmail" asp-route-id="@item.UserId"> | Order Email</a>
                         }
                     }
                     else

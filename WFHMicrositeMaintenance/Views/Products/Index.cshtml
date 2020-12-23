@@ -44,11 +44,15 @@
                     <a asp-action="Index" asp-controller="ProductImages" asp-route-id="@item.ProductId">Images</a> |
                     <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-                    @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower() == "dilanth")
+                    @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth"))
                     {
                         <a asp-action="Emails" asp-route-id="@item.ProductId"> | Send Emails</a>
                         <a asp-action="Complete" asp-route-id="@item.ProductId"> | Complete Verification</a>
                         <a asp-action="Ship" asp-route-id="@item.ProductId"> | Complete Shipping</a>
+                        if (!string.IsNullOrWhiteSpace(item.Config))
+                        {
+                            <a asp-action="OrderEmails" asp-route-id="@item.ProductId"> | Order Emails</a>
+                        }
                     }
                 </td>
             </tr>

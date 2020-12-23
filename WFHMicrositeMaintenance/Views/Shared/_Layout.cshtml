@@ -32,7 +32,7 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products</a>
                     </li>
                     }
-                    @if (User.IsInRole("APPS_FULL") || User.IsInRole("WFH_ADMIN") || User.IsInRole("WFH_USER"))
+                    @if (User.IsInRole("APPS_FULL") || User.IsInRole("WFH_ADMIN") || User.IsInRole("WFH_USER") || User.IsInRole("WFH_USERCS"))
                     {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>

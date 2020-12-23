@@ -47,6 +47,8 @@ namespace WFHMicrositeMaintenance.Models
                     .IsRequired()
                     .HasMaxLength(50);
 
+                entity.Property(e => e.Config).HasMaxLength(100);
+
                 entity.Property(e => e.DealerCode)
                     .IsRequired()
                     .HasMaxLength(10);

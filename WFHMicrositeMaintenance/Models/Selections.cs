@@ -11,6 +11,8 @@ namespace WFHMicrositeMaintenance.Models
         public int Fabric { get; set; }
         public int Mesh { get; set; }
         public int Frame { get; set; }
+        public int Arms { get; set; }
+        public int Castors { get; set; }
         public List<UserSelection> UserSelections { get; set; }
     }
 }

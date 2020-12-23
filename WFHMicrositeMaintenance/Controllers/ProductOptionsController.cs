@@ -65,7 +65,7 @@ namespace WFHMicrositeMaintenance.Controllers
             {
                 ProductId = id,
                 Product = await _context.Product.Where(x => x.ProductId == id).Select(y => y.Chair).FirstOrDefaultAsync(),
-                Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame" })
+                Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame", "Arms", "Castors" })
             };
             return View(productOption);
         }
@@ -91,6 +91,8 @@ namespace WFHMicrositeMaintenance.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index), new { id = productOption.ProductId });
             }
+            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame", "Arms", "Castors" });
+
             return View(productOption);
         }
 
@@ -108,7 +110,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 return NotFound();
             }
             productOption.Product = await _context.Product.Where(x => x.ProductId == productOption.ProductId).Select(y => y.Chair).FirstOrDefaultAsync();
-            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame" });
+            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame", "Arms", "Castors" });
 
             return View(productOption);
         }
@@ -153,6 +155,8 @@ namespace WFHMicrositeMaintenance.Controllers
                 }
                 return RedirectToAction(nameof(Index), new { id = productOption.ProductId });
             }
+            productOption.Types = new SelectList(new List<string>() { "Fabric", "Mesh", "Frame", "Arms", "Castors" });
+
             return View(productOption);
         }
 

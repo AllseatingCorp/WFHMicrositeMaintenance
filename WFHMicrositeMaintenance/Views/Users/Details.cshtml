@@ -122,7 +122,10 @@
                 @foreach (var item in Model.UserSelections)
                 {
                     <label>
-                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                        @if (item.Image != null)
+                        {
+                            <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />@Html.Raw("&nbsp;&nbsp;<br />")
+                        }
                         <label style="font-size:small">@item.Name</label>
                     </label>
                 }

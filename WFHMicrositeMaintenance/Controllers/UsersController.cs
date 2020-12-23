@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -59,21 +60,8 @@ namespace WFHMicrositeMaintenance.Controllers
             foreach (var item in user.UserSelections)
             {
                 productOption = await _context.ProductOption.Where(x => x.ProductOptionId == item.ProductOptionId).FirstOrDefaultAsync();
-                if (item.Type == "Fabric")
-                {
-                    item.Image = productOption.Image;
-                    item.Name = productOption.StockCode;
-                }
-                if (item.Type == "Mesh")
-                {
-                    item.Image = productOption.Image;
-                    item.Name = productOption.StockCode;
-                }
-                if (item.Type == "Frame")
-                {
-                    item.Image = productOption.Image;
-                    item.Name = productOption.StockCode;
-                }
+                item.Image = productOption.Image;
+                item.Name = productOption.Type + ": " + productOption.Name;
             }
 
             return View(user);
@@ -298,6 +286,12 @@ namespace WFHMicrositeMaintenance.Controllers
                             case "Frame":
                                 selections.Frame = option.ProductOptionId;
                                 break;
+                            case "Arms":
+                                selections.Arms = option.ProductOptionId;
+                                break;
+                            case "Castors":
+                                selections.Castors = option.ProductOptionId;
+                                break;
                         }
                     }
                     else
@@ -388,6 +382,7 @@ namespace WFHMicrositeMaintenance.Controllers
                 }
                 else
                 {
+                    var product = await _context.Product.FirstOrDefaultAsync(m => m.ProductId == user.ProductId);
                     var userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
                     int option1 = 0;
                     int option2 = 0;
@@ -408,6 +403,10 @@ namespace WFHMicrositeMaintenance.Controllers
                         }
                     }
                     var productImage = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == option1 && x.ProductOption2Id == option2 && x.ProductOption3Id == option3).FirstOrDefaultAsync();
+                    if (productImage == null)
+                    {
+                        productImage = new ProductImage() { Image = product.Image };
+                    }
                     string url = "";
                     string body = "Your address and selections have been saved.<br/><br/><a href='" + url + ">Click here</a> to review your selections.";
                     string file = _env.WebRootPath + "\\emails\\email2_" + user.Language + ".txt";
@@ -475,6 +474,20 @@ namespace WFHMicrositeMaintenance.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Users/OrderEmail/5
+        public IActionResult OrderEmail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            string apiUrl = _configuration.GetValue<string>("AppSettings:ApiUrl");
+            SendWebApiMessage(apiUrl + "email/" + id + "/5", "GET", "");
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public string GetNewPin()
         {
             string pin = "";
@@ -514,6 +527,30 @@ namespace WFHMicrositeMaintenance.Controllers
             }
 
             return "";
+        }
+
+        private string SendWebApiMessage(string url, string method, string json)
+        {
+            string data = "";
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(url);
+            request.Proxy = null;
+            request.ServerCertificateValidationCallback = delegate { return true; };
+            request.ContentType = "application/json";
+            request.Method = method;
+            if (json != "")
+            {
+                StreamWriter stream = new StreamWriter(request.GetRequestStream());
+                stream.Write(json);
+                stream.Flush();
+            }
+            try
+            {
+                WebResponse response = request.GetResponse();
+                StreamReader reader = new StreamReader(response.GetResponseStream());
+                data = reader.ReadToEnd();
+            }
+            catch (Exception ex) { data = ex.Message; }
+            return data;
         }
 
         private bool UserExists(int id)
