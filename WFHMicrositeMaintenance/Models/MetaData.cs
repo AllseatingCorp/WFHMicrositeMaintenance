@@ -53,6 +53,9 @@ namespace WFHMicrositeMaintenance.Models
 
             [Display(Name = "Tracking Number")]
             public string TrackingNumber { get; set; }
+
+            [Display(Name = "Order Submitted")]
+            public string Submitted { get; set; }
         }
 
         [NotMapped]
@@ -68,6 +71,8 @@ namespace WFHMicrositeMaintenance.Models
         public string Notes { get; set; }
         [NotMapped]
         public SelectList Languages { get; set; }
+        [NotMapped]
+        public string Config { get; set; }
     }
 
     [ModelMetadataType(typeof(UserSelectionMetadata))]

@@ -21,6 +21,7 @@ namespace WFHMicrositeMaintenance.Models
         public string SpecialInstructions { get; set; }
         public bool Commercial { get; set; }
         public DateTime? Emailed { get; set; }
+        public DateTime? Submitted { get; set; }
         public DateTime? Completed { get; set; }
         public DateTime? InProduction { get; set; }
         public DateTime? Shipped { get; set; }

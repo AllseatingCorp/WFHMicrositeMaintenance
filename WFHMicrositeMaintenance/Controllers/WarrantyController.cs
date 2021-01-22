@@ -88,6 +88,10 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
+            if (production.Image == null)
+            {
+                production.Image = production.Product.Image;
+            }
 
             return View(production);
         }

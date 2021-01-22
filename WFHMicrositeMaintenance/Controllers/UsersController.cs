@@ -36,6 +36,7 @@ namespace WFHMicrositeMaintenance.Controllers
             foreach (var user in users)
             {
                 user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
+                user.Config = await _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Config).FirstOrDefaultAsync();
             }
             return View(users);
         }

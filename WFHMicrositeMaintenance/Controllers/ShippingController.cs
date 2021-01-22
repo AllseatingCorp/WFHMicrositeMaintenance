@@ -35,14 +35,19 @@ namespace WFHMicrositeMaintenance.Controllers
         {
             Production production = new Production() { List = new List<ProductionList>() };
             List<User> users = await _context.User.Where(x => x.Completed != null && x.InProduction != null && (x.Shipped == null || x.TrackingNumber == null)).ToListAsync();
+            bool completed;
             foreach (var user in users)
             {
-                user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
-                production.List.Add(new ProductionList()
+                completed = await _context.Product.Where(x => x.ProductId == user.ProductId).Select(y => y.Completed).FirstOrDefaultAsync();
+                if (!completed)
                 {
-                    User = user,
-                    Product = await _context.Product.FindAsync(user.ProductId)
-                });
+                    user.OrderNumber = user.UserId.ToString().PadLeft(8, '0');
+                    production.List.Add(new ProductionList()
+                    {
+                        User = user,
+                        Product = await _context.Product.FindAsync(user.ProductId)
+                    });
+                }
             }
             return View(production);
         }
@@ -99,6 +104,10 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
+            if (production.Image == null)
+            {
+                production.Image = production.Product.Image;
+            }
 
             return View(production);
         }
@@ -155,6 +164,10 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
+            if (production.Image == null)
+            {
+                production.Image = production.Product.Image;
+            }
 
             return View(production);
         }
@@ -236,6 +249,10 @@ namespace WFHMicrositeMaintenance.Controllers
             production.UserSelections = userSelections;
             production.User.PhoneNumber = String.Format("{0:(###) ###-####}", production.User.PhoneNumber);
             production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync();
+            if (production.Image == null)
+            {
+                production.Image = await _context.Product.Where(x => x.ProductId == production.User.ProductId).Select(y => y.Image).FirstOrDefaultAsync();
+            }
             production.User.OrderNumber = production.User.UserId.ToString().PadLeft(8, '0');
             production.User.TrackingNumber = trackingnumber;
 

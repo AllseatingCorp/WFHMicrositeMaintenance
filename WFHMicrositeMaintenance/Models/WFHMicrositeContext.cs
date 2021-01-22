@@ -146,6 +146,8 @@ namespace WFHMicrositeMaintenance.Models
 
                 entity.Property(e => e.SpecialInstructions).HasMaxLength(1000);
 
+                entity.Property(e => e.Submitted).HasColumnType("datetime");
+
                 entity.Property(e => e.TrackingNumber).HasMaxLength(50);
             });
 

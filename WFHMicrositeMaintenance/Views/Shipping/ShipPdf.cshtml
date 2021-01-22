@@ -49,7 +49,10 @@
             {
                 <td>
                     <label>
-                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
+                        @if (item.Image != null)
+                        {
+                            <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" /><br />
+                        }
                         <label style="font-size:small">@item.Name</label>
                     </label>
                 </td>

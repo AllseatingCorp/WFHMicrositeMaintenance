@@ -22,44 +22,53 @@
             <th>
                 @Html.DisplayNameFor(model => model.Emailed)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Submitted)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderNumber)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmailAddress)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Emailed)
-                </td>
-                <td>
-                    @if (item.Shipped == null)
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Emailed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Submitted)
+            </td>
+            <td>
+                @if (item.Shipped == null)
+                {
+                    <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> @Html.Raw("|")
+                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
+                    <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> @Html.Raw("|")
+                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                    @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth") || User.Identity.Name.ToLower() == "shubreet kaur")
                     {
-                        <a asp-action="Edit" asp-route-id="@item.UserId">Edit</a> @Html.Raw("|")
-                        <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
-                        <a asp-action="Delete" asp-route-id="@item.UserId">Delete</a> @Html.Raw("|")
-                        <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
-                        @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth") || User.Identity.Name.ToLower() == "shubreet kaur")
-                        {
-                            <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
-                            <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
-                            <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
-                            <a asp-action="OrderEmail" asp-route-id="@item.UserId"> | Order Email</a>
-                        }
+                        <a asp-action="Selections" asp-route-id="@item.UserId"> | Selections</a>
+                        <a asp-action="ResetProd" asp-route-id="@item.UserId"> | Reset Prod</a>
+                        <a asp-action="ResetShip" asp-route-id="@item.UserId"> | Reset Ship</a>
                     }
-                    else
-                    {
-                        <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
-                        <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
-                    }
-                </td>
-            </tr>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-id="@item.UserId">Details</a> @Html.Raw("|")
+                    <a asp-action="Emails" asp-route-id="@item.UserId">Email</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(item.Config) && item.Completed != null && (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth") || User.Identity.Name.ToLower().StartsWith("michele") || User.Identity.Name.ToLower().StartsWith("priya") || User.Identity.Name.ToLower().StartsWith("maricar") || User.Identity.Name.ToLower().StartsWith("sherry")))
+                {
+                    <a asp-action="OrderEmail" asp-route-id="@item.UserId"> | Order Email</a>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>
@@ -70,7 +79,7 @@
         $(document).ready(function () {
             $('#index').DataTable({
                 "stateSave": true,
-                "columnDefs": [{ "targets": 3, "orderable": false }]
+                "columnDefs": [{ "targets": 4, "orderable": false }]
             });
         });
     </script>
