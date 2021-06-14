@@ -15,6 +15,7 @@ namespace WFHMicrositeMaintenance.Models
         {
         }
 
+        public virtual DbSet<AlternatePonumbers> AlternatePonumbers { get; set; }
         public virtual DbSet<MasterPostalZipP2> MasterPostalZipP2 { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductImage> ProductImage { get; set; }
@@ -26,6 +27,30 @@ namespace WFHMicrositeMaintenance.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AlternatePonumbers>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToTable("AlternatePONumbers");
+
+                entity.Property(e => e.AlternatePonumber)
+                    .IsRequired()
+                    .HasColumnName("AlternatePONumber")
+                    .HasMaxLength(30)
+                    .IsFixedLength();
+
+                entity.Property(e => e.PgmId)
+                    .HasColumnName("PgmID")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.Property(e => e.Wo)
+                    .HasColumnName("WO")
+                    .HasMaxLength(10)
+                    .IsFixedLength();
+            });
+
             modelBuilder.Entity<MasterPostalZipP2>(entity =>
             {
                 entity.HasNoKey();
@@ -141,6 +166,10 @@ namespace WFHMicrositeMaintenance.Models
                 entity.Property(e => e.ProductId).HasColumnName("ProductID");
 
                 entity.Property(e => e.ProvinceState).HasMaxLength(50);
+
+                entity.Property(e => e.SessionId)
+                    .HasColumnName("SessionID")
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.Shipped).HasColumnType("datetime");
 

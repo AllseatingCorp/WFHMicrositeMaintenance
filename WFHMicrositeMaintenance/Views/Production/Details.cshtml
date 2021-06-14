@@ -72,12 +72,28 @@
                 <dd class="col-sm-8">
                     @Html.DisplayFor(model => model.User.TrackingNumber)
                 </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.PoNumber)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.PoNumber)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.User.WorkOrder)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.User.WorkOrder)
+                </dd>
             </dl>
             @foreach (var item in Model.UserSelections)
             {
                 <label>
-                    <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" />&nbsp;&nbsp;<br />
-                    <label style="font-size:small">@item.Name</label>
+                    @if (item.Image != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(item.Image)" style="height:75%; width:auto" />
+                        @Html.Raw("&nbsp;&nbsp;")
+                    }
+                    <br /><label style="font-size:small">@item.Name</label>
                 </label>
             }
         </div>

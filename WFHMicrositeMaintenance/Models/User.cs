@@ -26,5 +26,6 @@ namespace WFHMicrositeMaintenance.Models
         public DateTime? InProduction { get; set; }
         public DateTime? Shipped { get; set; }
         public string TrackingNumber { get; set; }
+        public string SessionId { get; set; }
     }
 }

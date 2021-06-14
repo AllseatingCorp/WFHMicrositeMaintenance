@@ -145,6 +145,12 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            AlternatePonumbers alternatePonumbers = _context.AlternatePonumbers.Where(x => x.UserId == user.UserId).FirstOrDefault();
+            if (alternatePonumbers != null)
+            {
+                user.PoNumber = alternatePonumbers.AlternatePonumber;
+                user.WorkOrder = alternatePonumbers.Wo;
+            }
             int fabric = 0;
             int mesh = 0;
             int frame = 0;
@@ -179,6 +185,10 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
+            if (production.Image == null)
+            {
+                production.Image = production.Product.Image;
+            }
 
             return View(production);
         }
@@ -201,6 +211,12 @@ namespace WFHMicrositeMaintenance.Controllers
             user.ProvinceState = user.ProvinceState.ToUpper();
             user.PostalZip = user.PostalZip.ToUpper();
             user.Country = user.Country.ToUpper();
+            AlternatePonumbers alternatePonumbers = _context.AlternatePonumbers.Where(x => x.UserId == user.UserId).FirstOrDefault();
+            if (alternatePonumbers != null)
+            {
+                user.PoNumber = alternatePonumbers.AlternatePonumber;
+                user.WorkOrder = alternatePonumbers.Wo;
+            }
             int fabric = 0;
             int mesh = 0;
             int frame = 0;
@@ -235,6 +251,11 @@ namespace WFHMicrositeMaintenance.Controllers
                 UserSelections = userSelections,
                 Image = await _context.ProductImage.Where(x => x.ProductId == user.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync()
             };
+            if (production.Image == null)
+            {
+                production.Image = production.Product.Image;
+            }
+
             return View(production);
         }
 
@@ -283,6 +304,12 @@ namespace WFHMicrositeMaintenance.Controllers
             int code = 0;
             string[] codes = new string[3] { "", "", "" };
             production.User = await _context.User.FindAsync(id);
+            AlternatePonumbers alternatePonumbers = _context.AlternatePonumbers.Where(x => x.UserId == production.User.UserId).FirstOrDefault();
+            if (alternatePonumbers != null)
+            {
+                production.User.PoNumber = alternatePonumbers.AlternatePonumber;
+                production.User.WorkOrder = alternatePonumbers.Wo;
+            }
             List<UserSelection> userSelections = await _context.UserSelection.Where(x => x.UserId == id).ToListAsync();
             ProductOption productOption;
             foreach (var item in userSelections)
@@ -315,6 +342,10 @@ namespace WFHMicrositeMaintenance.Controllers
             production.UserSelections = userSelections;
             production.User.PhoneNumber = String.Format("{0:(###) ###-####}", production.User.PhoneNumber);
             production.Image = await _context.ProductImage.Where(x => x.ProductId == production.User.ProductId && x.ProductOption1Id == fabric && x.ProductOption2Id == mesh && x.ProductOption3Id == frame).Select(y => y.Image).FirstOrDefaultAsync();
+            if (production.Image == null)
+            {
+                production.Image = await _context.Product.Where(x => x.ProductId == production.User.ProductId).Select(y => y.Image).FirstOrDefaultAsync();
+            }
             production.User.OrderNumber = production.User.UserId.ToString().PadLeft(8, '0');
 
             string address = production.User.Address1;

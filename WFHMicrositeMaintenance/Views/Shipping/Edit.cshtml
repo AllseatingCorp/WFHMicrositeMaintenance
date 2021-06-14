@@ -98,6 +98,18 @@
                 <dd class="col-sm-6">
                     @Html.DisplayFor(model => model.User.SpecialInstructions)
                 </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.PoNumber)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.PoNumber)
+                </dd>
+                <dt class="col-sm-6">
+                    @Html.DisplayNameFor(model => model.User.WorkOrder)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.User.WorkOrder)
+                </dd>
             </dl>
             @foreach (var item in Model.UserSelections)
             {

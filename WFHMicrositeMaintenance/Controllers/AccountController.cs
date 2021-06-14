@@ -12,8 +12,28 @@ namespace WFHMicrositeMaintenance.Controllers
 {
     public class AccountController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string id)
         {
+            if (!string.IsNullOrEmpty(id))
+            {
+                using (var adContext = new PrincipalContext(ContextType.Domain, "ALLSEATING.COM"))
+                {
+                    UserPrincipal userPrincipal = UserPrincipal.FindByIdentity(adContext, id);
+                    //var role = userPrincipal.GetGroups();
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, userPrincipal.Name),
+                        new Claim(ClaimTypes.Email, userPrincipal.EmailAddress)
+                    };
+                    var roles = userPrincipal.GetGroups();
+                    foreach (var role in roles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role.Name));
+                    }
+                    HttpContext.SignInAsync(new ClaimsPrincipal(new ClaimsIdentity(claims, "User Identity")));
+                    return RedirectToAction("Index", "Home");
+                }
+            }
             return View();
         }
 

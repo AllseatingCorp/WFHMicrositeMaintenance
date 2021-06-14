@@ -44,7 +44,7 @@
                     <a asp-action="Index" asp-controller="ProductImages" asp-route-id="@item.ProductId">Images</a> |
                     <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
                     <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a>
-                    @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth"))
+                    @if (User.Identity.Name.ToLower() == "ben" || User.Identity.Name.ToLower().StartsWith("dilanth") || User.Identity.Name.ToLower().StartsWith("shubreet"))
                     {
                         <a asp-action="Emails" asp-route-id="@item.ProductId"> | Send Emails</a>
                         <a asp-action="Complete" asp-route-id="@item.ProductId"> | Complete Verification</a>

@@ -62,6 +62,12 @@ namespace WFHMicrositeMaintenance.Models
         [Display(Name = "Order Number")]
         public string OrderNumber { get; set; }
         [NotMapped]
+        [Display(Name = "PO Number")]
+        public string PoNumber { get; set; }
+        [NotMapped]
+        [Display(Name = "Work Order")]
+        public string WorkOrder { get; set; }
+        [NotMapped]
         public List<UserSelection> UserSelections { get; set; }
         [NotMapped]
         public List<Product> Products { get; set; }
